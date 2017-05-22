@@ -1,0 +1,257 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 11.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[      7970,        249]
+NotebookOptionsPosition[      6701,        199]
+NotebookOutlinePosition[      7050,        214]
+CellTagsIndexPosition[      7007,        211]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{"Clear", "[", "\"\<Global`*\>\"", "]"}]], "Input",
+ CellChangeTimes->{{3.7043227580212903`*^9, 3.704322766721788*^9}, {
+  3.704322807761135*^9, 3.7043228094452314`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["The numerical values are", "Subsubsection",
+ CellChangeTimes->{{3.7043228196398144`*^9, 3.704322823264022*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"vals", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"\[Lambda]", "\[Rule]", " ", 
+      RowBox[{"100", " ", 
+       TemplateBox[{
+        InterpretationBox["\[InvisibleSpace]", 1],"\"nm\"","nanometers",
+         "\"Nanometers\""},
+        "Quantity"]}]}], ",", " ", 
+     RowBox[{"T", "\[Rule]", " ", 
+      RowBox[{"1500", 
+       TemplateBox[{
+        InterpretationBox["\[InvisibleSpace]", 1],
+         RowBox[{"\"/\"", "\[InvisibleSpace]", "\"mm\""}],
+         "reciprocal millimeters",FractionBox["1", "\"Millimeters\""]},
+        "QuantityPostfix"]}]}], ",", " ", 
+     RowBox[{"m", " ", "\[Rule]", "  ", "1"}], ",", " ", 
+     RowBox[{"R", " ", "\[Rule]", "  ", 
+      RowBox[{"750", 
+       TemplateBox[{
+        InterpretationBox["\[InvisibleSpace]", 1],"\"mm\"","millimeters",
+         "\"Millimeters\""},
+        "Quantity"]}]}], ",", " ", 
+     RowBox[{"r", " ", "\[Rule]", "  ", 
+      RowBox[{"3", 
+       TemplateBox[{
+        InterpretationBox["\[InvisibleSpace]", 1],"\"mm\"","millimeters",
+         "\"Millimeters\""},
+        "Quantity"]}]}]}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.7043228260321803`*^9, 3.7043228538467712`*^9}, {
+  3.7043228884157486`*^9, 3.7043228919999533`*^9}, {3.7043229441359353`*^9, 
+  3.704323015176999*^9}, {3.7043230807437487`*^9, 3.704323134835843*^9}, {
+  3.704323573744947*^9, 3.704323575533049*^9}, {3.7043287310229263`*^9, 
+  3.7043287356891932`*^9}, {3.704330512583826*^9, 3.704330512858842*^9}, {
+  3.7043837396498747`*^9, 3.704383739950892*^9}}]
+}, Open  ]],
+
+Cell["\<\
+where \[Lambda] is the wavelength, T is the grating frequency, m is the \
+diffraction order, R is the radius of curvature of the grating and r is the \
+radius of the feed optic.\
+\>", "Subsubsection",
+ CellChangeTimes->{{3.704323140980194*^9, 3.70432320472384*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["The diffraction angle is found by", "Subsubsection",
+ CellChangeTimes->{{3.70432321888165*^9, 3.704323225243014*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"\[Theta]", " ", "=", " ", 
+  RowBox[{
+   RowBox[{"ArcSin", "[", 
+    RowBox[{"m", " ", "\[Lambda]", " ", "T"}], "]"}], " ", "/.", " ", 
+   "vals"}]}]], "Input",
+ CellChangeTimes->{{3.7043232275301447`*^9, 3.7043232299252815`*^9}, {
+  3.7043233272398477`*^9, 3.704323333273193*^9}, {3.7043235568929834`*^9, 
+  3.7043235690126762`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"ArcSin", "[", 
+  FractionBox["3", "20"], "]"}]], "Output",
+ CellChangeTimes->{{3.704323563774377*^9, 3.704323569566708*^9}, 
+   3.704328739671421*^9, 3.7043305171960897`*^9, 3.7043837423890314`*^9}]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Convert value to degrees", "Subsubsection",
+ CellChangeTimes->{{3.7043290525673175`*^9, 3.704329056130522*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"N", "[", 
+  RowBox[{
+   RowBox[{"\[Theta]", " ", "/", " ", "Degree"}], " ", ",", "10"}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.7043289609690785`*^9, 3.704329037997484*^9}, {
+  3.7043312041053786`*^9, 3.7043312144299693`*^9}, {3.704331296733677*^9, 
+  3.704331304427117*^9}, {3.704331353329914*^9, 3.704331365233595*^9}}],
+
+Cell[BoxData["8.626926558678637769`10."], "Output",
+ CellChangeTimes->{3.704331365760625*^9, 3.7043837423960323`*^9}]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["The distance from the solar virtual image to the grating is", \
+"Subsubsection",
+ CellChangeTimes->{{3.704328834726858*^9, 3.704317693178233*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"\[Phi]", "=", " ", 
+   RowBox[{"2", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"\[Pi]", "/", "2"}], " ", "-", " ", "\[Theta]"}], ")"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"a", " ", "=", " ", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"R", " ", 
+     RowBox[{"Sin", "[", 
+      RowBox[{"\[Phi]", "/", "2"}], "]"}]}], " ", "/.", " ", "vals"}], " ", "//",
+    "N"}]}]}], "Input",
+ CellChangeTimes->{{3.7043290684412255`*^9, 3.7043290741445518`*^9}, {
+   3.704329113193785*^9, 3.7043292255952144`*^9}, {3.704329258644105*^9, 
+   3.7043196283859205`*^9}, {3.704320379010854*^9, 3.704320379416877*^9}, {
+   3.7043812359756727`*^9, 3.704381236140682*^9}, {3.7043813193864436`*^9, 
+   3.7043813196414585`*^9}, {3.704381627805084*^9, 3.7043816292981696`*^9}, 
+   3.704383003605776*^9}],
+
+Cell[BoxData[
+ TemplateBox[{"741.5144974981946`","\"mm\"","millimeters","\"Millimeters\""},
+  "Quantity"]], "Output",
+ CellChangeTimes->{{3.7043292014228315`*^9, 3.7043292257912254`*^9}, 
+   3.704329260219195*^9, {3.704330517214091*^9, 3.704319629202967*^9}, 
+   3.704320379858902*^9, 3.704381237042734*^9, 3.7043813212965527`*^9, 
+   3.704381630055213*^9, 3.7043830040338*^9, 3.704383742409033*^9}]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["The distance from the center", "Subsubsection",
+ CellChangeTimes->{{3.7043176973384705`*^9, 3.7043177030917997`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"899", "-", "885"}]], "Input",
+ CellChangeTimes->{{3.704382379333069*^9, 3.704382402506395*^9}}],
+
+Cell[BoxData["14"], "Output",
+ CellChangeTimes->{{3.704382393914903*^9, 3.7043824044745073`*^9}, 
+   3.7043837424150333`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"a", " ", "-", " ", 
+     RowBox[{"740.131", 
+      TemplateBox[{
+       InterpretationBox["\[InvisibleSpace]", 1],"\"mm\"","millimeters",
+        "\"Millimeters\""},
+       "Quantity"]}]}], ")"}], "/", "r"}], " ", "/.", " ", "vals"}]], "Input",
+ CellChangeTimes->{{3.704383013259328*^9, 3.704383046062204*^9}, {
+  3.704384011945449*^9, 3.704384015022625*^9}}],
+
+Cell[BoxData["0.46116583273154294`"], "Output",
+ CellChangeTimes->{{3.7043830202627287`*^9, 3.704383046237214*^9}, 
+   3.7043837424250336`*^9, 3.7043840166197166`*^9}]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{944, 1022},
+WindowMargins->{{-960, Automatic}, {Automatic, 0}},
+FrontEndVersion->"11.0 for Microsoft Windows (64-bit) (September 21, 2016)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 192, 3, 30, "Input"],
+Cell[CellGroupData[{
+Cell[775, 27, 117, 1, 39, "Subsubsection"],
+Cell[895, 30, 1549, 36, 39, "Input"]
+}, Open  ]],
+Cell[2459, 69, 275, 5, 67, "Subsubsection"],
+Cell[CellGroupData[{
+Cell[2759, 78, 123, 1, 33, "Subsubsection"],
+Cell[CellGroupData[{
+Cell[2907, 83, 358, 8, 30, "Input"],
+Cell[3268, 93, 222, 4, 43, "Output"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[3539, 103, 117, 1, 39, "Subsubsection"],
+Cell[CellGroupData[{
+Cell[3681, 108, 348, 7, 30, "Input"],
+Cell[4032, 117, 117, 1, 30, "Output"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4198, 124, 152, 2, 39, "Subsubsection"],
+Cell[CellGroupData[{
+Cell[4375, 130, 821, 20, 50, "Input"],
+Cell[5199, 152, 399, 6, 38, "Output"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5647, 164, 123, 1, 39, "Subsubsection"],
+Cell[CellGroupData[{
+Cell[5795, 169, 119, 2, 30, "Input"],
+Cell[5917, 173, 125, 2, 30, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6079, 180, 424, 11, 34, "Input"],
+Cell[6506, 193, 167, 2, 30, "Output"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
