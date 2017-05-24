@@ -74,7 +74,16 @@ y_RS = RR*sin(phi_RS);
 hold off
 plot([x_s],[y_s],'+k')
 hold on
-plot([x_g],[y_g],'xg')
+% Grating surface plot, using coordinates centered at grating center of curvature
+x0_g = -x_g; % center of curvature of grating
+y0_g = -y_g; % center of curvature of grating
+subtent_g = atan(w_g/R_g);
+thetas_g = [(-subtent_g/2):0.01:0, 0:0.01:(subtent_g/2)];
+thetas_g += atan((y_g-y0_g)/(x_g-x0_g));
+xs_g = x0_g - R_g .* cos(thetas_g);
+ys_g = y0_g - R_g .* sin(thetas_g);
+plot(xs_g, ys_g, 'g-', 'LineWidth',5)
+% plot([x_g],[y_g],'gx')
 plot(x_p,y_p,'-b','LineWidth',5)
 plot([x_s,x_g,x_d],[y_s,y_g,y_d],'k')
 plot(x_RS,y_RS,'--k')
