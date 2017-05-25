@@ -1,9 +1,5 @@
 function [ r ] = draw_zemax( args )
 
-% if ~exist('args', 'var')
-%     args = [];
-% end
-
 % Initialize the OpticStudio connection
 TheApplication = InitConnection();
 if isempty(TheApplication)
@@ -72,11 +68,13 @@ beta = angle2d( x_gn, y_gn, x_d, y_d );
 % wavelength at center of detector
 lambda = (d_g ./ m) .* ( sin(alpha) + sin(beta) );
 
-
-import ZOSAPI.*;
 import ZOSAPI_Interfaces.*;
+import ZOSAPI.*;
 
+%test = ZOSAPI_Interfaces
+%test2 = ZOSAPI
 
+test = 
 
 % Set up primary optical system
 TheSystem = TheApplication.PrimarySystem;
@@ -97,7 +95,7 @@ TheSystemData.Wavelengths.GetWavelength(1).Wavelength = lambda;
 % Lens data
 TheLDE = TheSystem.LDE;
 cBreak = TheLDE.InsertNewSurfaceAt(2);
-cBreak.ChangeType(ZOSAPI_Interfaces.SurfaceType_CoordinateBreak)
+cBreak.ChangeType(SurfaceType_CoordinateBreak)
 
 
 % Save and close
