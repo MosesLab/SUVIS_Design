@@ -16,6 +16,8 @@
 #include <ctime>
 #include <functional>
 #include <assert.h>
+#include <direct.h>
+#include <algorithm>
 
 
 
@@ -77,12 +79,15 @@ int _tmain(int argc, _TCHAR* argv[])
 	double R_g = 1500; // (mm)grating radius
 	double w_g = 75; // grating diameter
 	double d_s = 15e-3; // (mm)width of slit
-	double d_g = 1 / 2400; // (mm)grating groove period
+	double d_g = 1.0 / 2400.0; // (mm)grating groove period
 	double d_d = 15e-3; // (mm)detector pixel spacing
 	double N_d = 2048; // Number of detector pixels in the dispersion direction
-	double m = 1; // spectral order
+	int m = 1; // spectral order
 	double r_s = 3;		// (mm) Radius of feed optic
+
+
 	double h_d = N_d / 2 * d_d;	// Full height of the detector
+	double h_s = h_d * 2; // Height of aperture
 
 	double RR = R_g / 2;	// Radius of rowland circle
 
@@ -109,9 +114,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	double beta = angle2d(z_gn, x_gn, z_d, x_d);
 
 	// Wavelength at center of detector
-	double lambda = (d_g / m) * (sin(alpha) + sin(beta));
+	double lambda = (d_g / (double) m) * (sin(alpha) + sin(beta));
 
-	TheSystem->SystemData->Aperture->ApertureValue = w_g;
+	TheSystem->SystemData->Aperture->ApertureValue = h_s;
+	TheSystem->SystemData->Wavelengths->GetWavelength(1)->Wavelength = lambda * 1000;
 
 	// Open the lens data editor
 	ILensDataEditorPtr lde = TheSystem->LDE;
@@ -123,32 +129,67 @@ int _tmain(int argc, _TCHAR* argv[])
 	ISurfaceCoordinateBreakPtr ov_surf = ov_row->SurfaceData;	// acquire surface data to access coordinate break methods
 	ov_surf->Decenter_X = -x_s;	// change the decenter to be on the same x-coordinate as the slit
 	ov_row->Thickness = RR;		// Move to the center of the rowland circle
+	ov_row->Comment = _bstr_t::_bstr_t("Center on Rowland circle");
 
 	// Create the feed optic
+	ILDERowPtr so_row = lde->InsertNewSurfaceAt(lde->NumberOfSurfaces - 1);	// Create rotation offset surface
+	so_row->ChangeType(so_row->GetSurfaceTypeSettings(SurfaceType_CoordinateBreak));	// change type to coordinate break
+	so_row->Thickness = r_s / 2;
+	so_row->Comment = _bstr_t::_bstr_t("FEED OPTIC rotation offset");
 	ILDERowPtr s_row = lde->InsertNewSurfaceAt(lde->NumberOfSurfaces - 1);	// Insert the surface before the image surface
 	s_row->ChangeType(s_row->GetSurfaceTypeSettings(SurfaceType_Toroidal));		// Change the surface type to toroidal
 	ISurfaceToroidalPtr s_surf = s_row->SurfaceData;
 	s_surf->RadiusOfRotation = r_s;		// Radius of rotation of the toroid is equal to the radius of the feed optic
 	ISurfaceApertureTypePtr s_apType = s_row->ApertureData->CreateApertureTypeSettings(SurfaceApertureTypes_RectangularAperture);
 	ISurfaceApertureRectangularPtr rect = s_apType->Get_S_RectangularAperture();
-	rect->XHalfWidth = r_s;		// x half width equal to radius of feed optic
-	rect->YHalfWidth = w_g / 2; // y half width equal to radius of grating
+	rect->XHalfWidth = 2 * r_s / 3;		// x half width equal to radius of feed optic
+	rect->YHalfWidth = h_s; // y half width equal to double the height of the detector
 	s_row->ApertureData->ChangeApertureTypeSettings(s_apType);
 	s_row->Material = _bstr_t::_bstr_t("MIRROR");
+	s_row->Comment = _bstr_t::_bstr_t("FEED OPTIC");
 	move_polar(lde, s_row, RR - r_s, phi_s);
+	ILDERowPtr si_row = lde->InsertNewSurfaceAt(lde->NumberOfSurfaces - 1);	// Create rotation offset surface
+	si_row->ChangeType(si_row->GetSurfaceTypeSettings(SurfaceType_CoordinateBreak));	// change type to coordinate break
+	ISolveDataPtr si_solve = si_row->ThicknessCell->CreateSolveType(SolveType_SurfacePickup);
+	si_solve->Get_S_SurfacePickup()->Surface = so_row->SurfaceNumber;
+	si_solve->Get_S_SurfacePickup()->ScaleFactor = -1;
+	si_row->ThicknessCell->SetSolveData(si_solve);
+	si_row->Comment = _bstr_t::_bstr_t("FEED OPTIC inverse rotation offset");
 
 	// Create the diffraction grating
 	ILDERowPtr g_row = lde->InsertNewSurfaceAt(lde->NumberOfSurfaces - 1);	// Insert the surface before the image surface
-	s_row->ChangeType(s_row->GetSurfaceTypeSettings(SurfaceType_DiffractionGrating));		// Change the surface type to diffraction grating
+	g_row->ChangeType(s_row->GetSurfaceTypeSettings(SurfaceType_DiffractionGrating));		// Change the surface type to diffraction grating
 	ISurfaceDiffractionGratingPtr g_surf = g_row->SurfaceData;
-	//g_surf->DiffractionOrder = m;	// Image in the diffraction order specified by m
-	//g_surf->LinesPerMicroMeter = 1 / d_g;	// Number of lines per millimeter is also specified as an argument
-	//g_row->SemiDiameter = w_g / 2;
+	g_surf->DiffractionOrder = m;	// Image in the diffraction order specified by m
+	g_surf->LinesPerMicroMeter = 1.0 / d_g / 1000.0;	// Number of lines per millimeter is also specified as an argument
+	g_row->SemiDiameter = w_g / 2;		// Size of diffraction grating is specified as an argument
+	g_row->Material = _bstr_t::_bstr_t("MIRROR");
+	g_row->Radius = R_g;
+	g_row->Comment = _bstr_t::_bstr_t("GRATING");
+	move_polar(lde, g_row, RR, phi_g);
+
+	// Create detector
+	ILDERowPtr d_row = lde->GetSurfaceAt(lde->NumberOfSurfaces);
+	d_row->Comment = _bstr_t::_bstr_t("DETECTOR");
+	ILDERowPtr cb1_row = lde->InsertNewSurfaceAt(lde->NumberOfSurfaces - 1);	// create first coordinate break at same index as input surface
+	cb1_row->ChangeType(cb1_row->GetSurfaceTypeSettings(SurfaceType_CoordinateBreak));	// change type to coordinate break
+	ISurfaceCoordinateBreakPtr cb1_surf = cb1_row->SurfaceData;	// acquire surface data to access coordinate break methods
+	cb1_surf->TiltAbout_Y = phi_d;
+	cb1_row->Thickness = RR;		// Move to the center of the rowland circle
+	_bstr_t c1 = _bstr_t::_bstr_t("DETECTOR polar transform");
+	cb1_row->Comment = _bstr_t::_bstr_t(c1);
 
 
+	char buf[1000];
+	_getcwd(buf, 1000);
+	string cp(buf);
+	string zp = cp + "../../../../zemax/suvis_design.zmx";
+	replace(zp.begin(), zp.end(), '\\', '/');
+	cout << zp << endl;
 
-	TheSystem->SaveAs(_bstr_t::_bstr_t("E:\\Users\\byrdie\\School\\Research\\SUVIS_Design\\zemax\\suvis_design.zmx"));
+	cout << system("echo $(SolutionDir)") << endl;
 
+	TheSystem->SaveAs(_bstr_t::_bstr_t(zp.c_str()));
 	
 
 	TheSystem->Close(false);
@@ -176,17 +217,37 @@ double angle2d(double ax, double ay, double bx, double by) {
 // Move a surface to the specified polar position and then return to the original point
 void move_polar(ILensDataEditorPtr lde, ILDERowPtr row, double r, double phi) {
 
+	_bstr_t row_com = row->Comment;
+
 	ILDERowPtr cb1_row = lde->InsertNewSurfaceAt(row->SurfaceNumber);	// create first coordinate break at same index as input surface
 	cb1_row->ChangeType(cb1_row->GetSurfaceTypeSettings(SurfaceType_CoordinateBreak));	// change type to coordinate break
 	ISurfaceCoordinateBreakPtr cb1_surf = cb1_row->SurfaceData;	// acquire surface data to access coordinate break methods
 	cb1_surf->TiltAbout_Y = phi * 180 / M_PI;
 	cb1_row->Thickness = r;		// Move to the center of the rowland circle
+	_bstr_t c1 = _bstr_t::_bstr_t( " polar transform");
+	cb1_row->Comment = _bstr_t::_bstr_t(row_com + c1);
 
 	ILDERowPtr cb2_row = lde->InsertNewSurfaceAt(row->SurfaceNumber + 2);	// create second coordinate break after input surface
 	cb2_row->ChangeType(cb2_row->GetSurfaceTypeSettings(SurfaceType_CoordinateBreak));	// change type to coordinate break
 	ISurfaceCoordinateBreakPtr cb2_surf = cb2_row->SurfaceData;	// acquire surface data to access coordinate break methods
-	cb2_surf->TiltAbout_Y = -phi * 180 / M_PI;
-	cb2_row->Thickness = -r;		// Move to the center of the rowland circle
+	//cb2_row->Thickness = -r;		// Move to the center of the rowland circle
+	ISolveDataPtr cb2_solve = cb2_row->ThicknessCell->CreateSolveType(SolveType_SurfacePickup);
+	cb2_solve->Get_S_SurfacePickup()->Surface = row->SurfaceNumber;
+	cb2_solve->Get_S_SurfacePickup()->ScaleFactor = -1;
+	cb2_row->ThicknessCell->SetSolveData(cb2_solve);
+
+	_bstr_t c2 = _bstr_t::_bstr_t(" inverse transform r");
+	cb2_row->Comment = _bstr_t::_bstr_t(row_com + c2);
+
+	ILDERowPtr cb3_row = lde->InsertNewSurfaceAt(row->SurfaceNumber + 3);	// create second coordinate break after input surface
+	cb3_row->ChangeType(cb3_row->GetSurfaceTypeSettings(SurfaceType_CoordinateBreak));	// change type to coordinate break
+	ISurfaceCoordinateBreakPtr cb3_surf = cb3_row->SurfaceData;	// acquire surface data to access coordinate break methods
+	ISolveDataPtr cb3_solve = cb3_surf->TiltAbout_Y_Cell->CreateSolveType(SolveType_SurfacePickup);
+	cb3_solve->Get_S_SurfacePickup()->Surface = row->SurfaceNumber;
+	cb3_solve->Get_S_SurfacePickup()->ScaleFactor = -1;
+	cb3_surf->TiltAbout_Y_Cell->SetSolveData(cb3_solve);
+	_bstr_t c3 = _bstr_t::_bstr_t(" inverse transform phi");
+	cb3_row->Comment = _bstr_t::_bstr_t(row_com + c3);
 
 }
 
