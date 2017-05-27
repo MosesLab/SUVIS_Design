@@ -166,7 +166,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	g_row->Material = _bstr_t::_bstr_t("MIRROR");
 	g_row->Radius = R_g;
 	g_row->Comment = _bstr_t::_bstr_t("GRATING");
-	move_polar(lde, g_row, RR, phi_g);
+	move_polar(lde, g_row, -RR, phi_g + M_PI);
 
 	// Create detector
 	ILDERowPtr d_row = lde->GetSurfaceAt(lde->NumberOfSurfaces);
