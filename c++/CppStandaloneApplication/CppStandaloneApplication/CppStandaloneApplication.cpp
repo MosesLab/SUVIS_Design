@@ -230,12 +230,10 @@ void move_polar(ILensDataEditorPtr lde, ILDERowPtr row, double r, double phi) {
 	ILDERowPtr cb2_row = lde->InsertNewSurfaceAt(row->SurfaceNumber + 2);	// create second coordinate break after input surface
 	cb2_row->ChangeType(cb2_row->GetSurfaceTypeSettings(SurfaceType_CoordinateBreak));	// change type to coordinate break
 	ISurfaceCoordinateBreakPtr cb2_surf = cb2_row->SurfaceData;	// acquire surface data to access coordinate break methods
-	//cb2_row->Thickness = -r;		// Move to the center of the rowland circle
 	ISolveDataPtr cb2_solve = cb2_row->ThicknessCell->CreateSolveType(SolveType_SurfacePickup);
 	cb2_solve->Get_S_SurfacePickup()->Surface = row->SurfaceNumber;
 	cb2_solve->Get_S_SurfacePickup()->ScaleFactor = -1;
 	cb2_row->ThicknessCell->SetSolveData(cb2_solve);
-
 	_bstr_t c2 = _bstr_t::_bstr_t(" inverse transform r");
 	cb2_row->Comment = _bstr_t::_bstr_t(row_com + c2);
 
@@ -248,6 +246,29 @@ void move_polar(ILensDataEditorPtr lde, ILDERowPtr row, double r, double phi) {
 	cb3_surf->TiltAbout_Y_Cell->SetSolveData(cb3_solve);
 	_bstr_t c3 = _bstr_t::_bstr_t(" inverse transform phi");
 	cb3_row->Comment = _bstr_t::_bstr_t(row_com + c3);
+
+}
+
+void rot_z(ILensDataEditorPtr lde, ILDERowPtr row, double phi) {
+
+	_bstr_t row_com = row->Comment;
+
+	ILDERowPtr cb1_row = lde->InsertNewSurfaceAt(row->SurfaceNumber);	// create first coordinate break at same index as input surface
+	cb1_row->ChangeType(cb1_row->GetSurfaceTypeSettings(SurfaceType_CoordinateBreak));	// change type to coordinate break
+	ISurfaceCoordinateBreakPtr cb1_surf = cb1_row->SurfaceData;	// acquire surface data to access coordinate break methods
+	cb1_surf->TiltAbout_Z = phi * 180 / M_PI;
+	_bstr_t c1 = _bstr_t::_bstr_t(" polar transform");
+	cb1_row->Comment = _bstr_t::_bstr_t(row_com + c1);
+
+	ILDERowPtr cb2_row = lde->InsertNewSurfaceAt(row->SurfaceNumber + 2);	// create second coordinate break after input surface
+	cb2_row->ChangeType(cb2_row->GetSurfaceTypeSettings(SurfaceType_CoordinateBreak));	// change type to coordinate break
+	ISurfaceCoordinateBreakPtr cb2_surf = cb2_row->SurfaceData;	// acquire surface data to access coordinate break methods
+	ISolveDataPtr cb2_solve = cb2_row->ThicknessCell->CreateSolveType(SolveType_SurfacePickup);
+	cb2_solve->Get_S_SurfacePickup()->Surface = row->SurfaceNumber;
+	cb2_solve->Get_S_SurfacePickup()->ScaleFactor = -1;
+	cb2_row->ThicknessCell->SetSolveData(cb2_solve);
+	_bstr_t c2 = _bstr_t::_bstr_t(" inverse transform r");
+	cb2_row->Comment = _bstr_t::_bstr_t(row_com + c2);
 
 }
 
