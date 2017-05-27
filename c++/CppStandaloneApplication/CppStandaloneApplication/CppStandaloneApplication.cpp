@@ -33,6 +33,7 @@ using namespace ZOSAPI_Interfaces;
 
 double angle2d(double ax, double ay, double bx, double by);
 void move_polar(ILensDataEditorPtr lde, ILDERowPtr row, double r, double phi);
+void rot_z(ILensDataEditorPtr lde, ILDERowPtr row, double phi);
 void handleError(std::string msg);
 void logInfo(std::string msg);
 void finishStandaloneApplication(IZOSAPI_ApplicationPtr TheApplication);
@@ -72,8 +73,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	TheSystem->New(false);
 
 	// Design using a custom grating
-	double offset = 4 * M_PI / 180; // Offset detector from normal
-	double phi_s = 10 * M_PI / 180; // (rad)angular position of slit     on Rowland Circle
+	double offset = 2.0 * M_PI / 180.0; // Offset detector from normal
+	double phi_s = 10.0 * M_PI / 180.0; // (rad)angular position of slit     on Rowland Circle
 	double phi_g = M_PI - offset; // (rad)angular position of grating  on Rowland Circle
 	double phi_d = offset; // (rad)angular position of detector on Rowland Circle
 	double R_g = 1500; // (mm)grating radius
@@ -114,10 +115,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	double beta = angle2d(z_gn, x_gn, z_d, x_d);
 
 	// Wavelength at center of detector
-	double lambda = (d_g / (double) m) * (sin(alpha) + sin(beta));
+	double lambda = (d_g / ((double) m)) * (sin(alpha) - sin(beta));
 
-	TheSystem->SystemData->Aperture->ApertureValue = h_s;
-	TheSystem->SystemData->Wavelengths->GetWavelength(1)->Wavelength = lambda * 1000;
+	TheSystem->SystemData->Aperture->ApertureValue = 1.0;
+	TheSystem->SystemData->Wavelengths->GetWavelength(1)->Wavelength = lambda * 1000.0;
 
 	// Open the lens data editor
 	ILensDataEditorPtr lde = TheSystem->LDE;
@@ -160,13 +161,15 @@ int _tmain(int argc, _TCHAR* argv[])
 	ILDERowPtr g_row = lde->InsertNewSurfaceAt(lde->NumberOfSurfaces - 1);	// Insert the surface before the image surface
 	g_row->ChangeType(s_row->GetSurfaceTypeSettings(SurfaceType_DiffractionGrating));		// Change the surface type to diffraction grating
 	ISurfaceDiffractionGratingPtr g_surf = g_row->SurfaceData;
-	g_surf->DiffractionOrder = m;	// Image in the diffraction order specified by m
+	g_surf->DiffractionOrder = -m;	// Image in the diffraction order specified by m
 	g_surf->LinesPerMicroMeter = 1.0 / d_g / 1000.0;	// Number of lines per millimeter is also specified as an argument
-	g_row->SemiDiameter = w_g / 2;		// Size of diffraction grating is specified as an argument
+	g_row->SemiDiameter = w_g / 2.0;		// Size of diffraction grating is specified as an argument
 	g_row->Material = _bstr_t::_bstr_t("MIRROR");
 	g_row->Radius = R_g;
 	g_row->Comment = _bstr_t::_bstr_t("GRATING");
-	move_polar(lde, g_row, -RR, phi_g + M_PI);
+	move_polar(lde,g_row,  -RR, phi_g + M_PI);
+	rot_z(lde, lde->GetSurfaceAt(lde->NumberOfSurfaces - 4), M_PI / 2);
+
 
 	// Create detector
 	ILDERowPtr d_row = lde->GetSurfaceAt(lde->NumberOfSurfaces);
@@ -174,7 +177,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	ILDERowPtr cb1_row = lde->InsertNewSurfaceAt(lde->NumberOfSurfaces - 1);	// create first coordinate break at same index as input surface
 	cb1_row->ChangeType(cb1_row->GetSurfaceTypeSettings(SurfaceType_CoordinateBreak));	// change type to coordinate break
 	ISurfaceCoordinateBreakPtr cb1_surf = cb1_row->SurfaceData;	// acquire surface data to access coordinate break methods
-	cb1_surf->TiltAbout_Y = phi_d;
+	cb1_surf->TiltAbout_Y = phi_d * 180 / M_PI;
 	cb1_row->Thickness = RR;		// Move to the center of the rowland circle
 	_bstr_t c1 = _bstr_t::_bstr_t("DETECTOR polar transform");
 	cb1_row->Comment = _bstr_t::_bstr_t(c1);
@@ -257,18 +260,18 @@ void rot_z(ILensDataEditorPtr lde, ILDERowPtr row, double phi) {
 	cb1_row->ChangeType(cb1_row->GetSurfaceTypeSettings(SurfaceType_CoordinateBreak));	// change type to coordinate break
 	ISurfaceCoordinateBreakPtr cb1_surf = cb1_row->SurfaceData;	// acquire surface data to access coordinate break methods
 	cb1_surf->TiltAbout_Z = phi * 180 / M_PI;
-	_bstr_t c1 = _bstr_t::_bstr_t(" polar transform");
+	_bstr_t c1 = _bstr_t::_bstr_t(" rotate z");
 	cb1_row->Comment = _bstr_t::_bstr_t(row_com + c1);
 
-	ILDERowPtr cb2_row = lde->InsertNewSurfaceAt(row->SurfaceNumber + 2);	// create second coordinate break after input surface
-	cb2_row->ChangeType(cb2_row->GetSurfaceTypeSettings(SurfaceType_CoordinateBreak));	// change type to coordinate break
-	ISurfaceCoordinateBreakPtr cb2_surf = cb2_row->SurfaceData;	// acquire surface data to access coordinate break methods
-	ISolveDataPtr cb2_solve = cb2_row->ThicknessCell->CreateSolveType(SolveType_SurfacePickup);
-	cb2_solve->Get_S_SurfacePickup()->Surface = row->SurfaceNumber;
-	cb2_solve->Get_S_SurfacePickup()->ScaleFactor = -1;
-	cb2_row->ThicknessCell->SetSolveData(cb2_solve);
-	_bstr_t c2 = _bstr_t::_bstr_t(" inverse transform r");
-	cb2_row->Comment = _bstr_t::_bstr_t(row_com + c2);
+	ILDERowPtr cb3_row = lde->InsertNewSurfaceAt(row->SurfaceNumber + 2);	// create second coordinate break after input surface
+	cb3_row->ChangeType(cb3_row->GetSurfaceTypeSettings(SurfaceType_CoordinateBreak));	// change type to coordinate break
+	ISurfaceCoordinateBreakPtr cb3_surf = cb3_row->SurfaceData;	// acquire surface data to access coordinate break methods
+	ISolveDataPtr cb3_solve = cb3_surf->TiltAbout_Z_Cell->CreateSolveType(SolveType_SurfacePickup);
+	cb3_solve->Get_S_SurfacePickup()->Surface = row->SurfaceNumber;
+	cb3_solve->Get_S_SurfacePickup()->ScaleFactor = -1;
+	cb3_surf->TiltAbout_Z_Cell->SetSolveData(cb3_solve);
+	_bstr_t c3 = _bstr_t::_bstr_t(" unrotate z");
+	cb3_row->Comment = _bstr_t::_bstr_t(row_com + c3);
 
 }
 
