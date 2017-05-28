@@ -73,8 +73,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	TheSystem->New(false);
 
 	// Design using a custom grating
-	double offset = 2.0 * M_PI / 180.0; // Offset detector from normal
-	double phi_s = 10.0 * M_PI / 180.0; // (rad)angular position of slit     on Rowland Circle
+	double offset = 4.0 * M_PI / 180.0; // Offset detector from normal
+	double phi_s = 30.0 * M_PI / 180.0; // (rad)angular position of slit     on Rowland Circle
 	double phi_g = M_PI - offset; // (rad)angular position of grating  on Rowland Circle
 	double phi_d = offset; // (rad)angular position of detector on Rowland Circle
 	double R_g = 1500; // (mm)grating radius
@@ -115,7 +115,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	double beta = angle2d(z_gn, x_gn, z_d, x_d);
 
 	// Wavelength at center of detector
-	double lambda = (d_g / ((double) m)) * (sin(alpha) - sin(beta));
+	double lambda = (d_g / ((double) m)) * (sin(alpha) + sin(beta));
+
+	cout << alpha << endl;
+	cout << beta << endl;
+	cout << lambda << endl;
 
 	TheSystem->SystemData->Aperture->ApertureValue = 1.0;
 	TheSystem->SystemData->Wavelengths->GetWavelength(1)->Wavelength = lambda * 1000.0;
