@@ -1,9 +1,9 @@
-﻿// Created by Microsoft (R) C/C++ Compiler Version 14.10.25019.0 (16bae62c).
+﻿// Created by Microsoft (R) C/C++ Compiler Version 14.10.25019.0 (7a5fabb9).
 //
-// c:\users\royts\school\research\suvis_design\c++\cppstandaloneapplication\cppstandaloneapplication\debug\zosapii.tlh
+// e:\users\byrdie\school\research\suvis_design\c++\cppstandaloneapplication\cppstandaloneapplication\debug\zosapii.tlh
 //
 // C++ source equivalent of type library C:\\Program Files\\Zemax OpticStudio\\ZOS-API\\Libraries\\ZOSAPII.tlb
-// compiler-generated file created 05/26/17 at 21:30:51 - DO NOT EDIT!
+// compiler-generated file created 05/27/17 at 20:11:52 - DO NOT EDIT!
 
 #pragma once
 #pragma pack(push, 8)
@@ -58670,7 +58670,7 @@ ISurface : IDispatch
 // Function implementation mapping
 //
 
-#pragma start_map_region("c:\users\royts\school\research\suvis_design\c++\cppstandaloneapplication\cppstandaloneapplication\debug\zosapii.tli")
+#pragma start_map_region("e:\users\byrdie\school\research\suvis_design\c++\cppstandaloneapplication\cppstandaloneapplication\debug\zosapii.tli")
 __declspec(implementation_key(1)) long IConvertToNSCGroup::GetFirstSurface ( );
 __declspec(implementation_key(2)) void IConvertToNSCGroup::PutFirstSurface ( long pRetVal );
 __declspec(implementation_key(3)) long IConvertToNSCGroup::GetLastSurface ( );

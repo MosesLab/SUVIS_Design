@@ -74,7 +74,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// Design using a custom grating
 	double offset = 4.0 * M_PI / 180.0; // Offset detector from normal
-	double phi_s = 30.0 * M_PI / 180.0; // (rad)angular position of slit     on Rowland Circle
+	double phi_s = 40 * M_PI / 180.0; // (rad)angular position of slit     on Rowland Circle
 	double phi_g = M_PI - offset; // (rad)angular position of grating  on Rowland Circle
 	double phi_d = offset; // (rad)angular position of detector on Rowland Circle
 	double R_g = 1500; // (mm)grating radius
@@ -87,10 +87,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	double r_s = 3;		// (mm) Radius of feed optic
 
 
-	double h_d = N_d / 2 * d_d;	// Full height of the detector
-	double h_s = h_d * 2; // Height of aperture
+	double h_d = N_d / 2.0 * d_d;	// Full height of the detector
+	double h_s = h_d * 2.0; // Height of aperture
 
-	double RR = R_g / 2;	// Radius of rowland circle
+	double RR = R_g / 2.0;	// Radius of rowland circle
 
 	// Cartesian coordinates of grating slit and detector (centers).
 	double z_g = RR * cos(phi_g);
@@ -108,11 +108,15 @@ int _tmain(int argc, _TCHAR* argv[])
 	double z_gn = - z_g / RR;
 	double x_gn = -x_g / RR;
 
+	// Displacement vector from grating to detector
+	double z_gd = z_d - z_g;
+	double x_gd = x_d - x_g;
+
 	// Alpha angle at grating center
 	double alpha = angle2d(z_gn, x_gn, z_gs, x_gs);
 
 	// Beta angle at center of detector
-	double beta = angle2d(z_gn, x_gn, z_d, x_d);
+	double beta = angle2d(z_gn, x_gn, z_gd, x_gd);
 
 	// Wavelength at center of detector
 	double lambda = (d_g / ((double) m)) * (sin(alpha) + sin(beta));
@@ -121,7 +125,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	cout << beta << endl;
 	cout << lambda << endl;
 
-	TheSystem->SystemData->Aperture->ApertureValue = 1.0;
+	TheSystem->SystemData->Aperture->ApertureValue = h_s;
 	TheSystem->SystemData->Wavelengths->GetWavelength(1)->Wavelength = lambda * 1000.0;
 
 	// Open the lens data editor
@@ -147,7 +151,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	s_surf->RadiusOfRotation = r_s;		// Radius of rotation of the toroid is equal to the radius of the feed optic
 	ISurfaceApertureTypePtr s_apType = s_row->ApertureData->CreateApertureTypeSettings(SurfaceApertureTypes_RectangularAperture);
 	ISurfaceApertureRectangularPtr rect = s_apType->Get_S_RectangularAperture();
-	rect->XHalfWidth = 2 * r_s / 3;		// x half width equal to radius of feed optic
+	rect->XHalfWidth =  r_s;		// x half width equal to radius of feed optic
 	rect->YHalfWidth = h_s; // y half width equal to double the height of the detector
 	s_row->ApertureData->ChangeApertureTypeSettings(s_apType);
 	s_row->Material = _bstr_t::_bstr_t("MIRROR");
@@ -171,7 +175,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	g_row->Material = _bstr_t::_bstr_t("MIRROR");
 	g_row->Radius = R_g;
 	g_row->Comment = _bstr_t::_bstr_t("GRATING");
-	move_polar(lde,g_row,  -RR, phi_g + M_PI);
+	move_polar(lde,g_row,  -RR, phi_g - M_PI);
 	rot_z(lde, lde->GetSurfaceAt(lde->NumberOfSurfaces - 4), M_PI / 2);
 
 
@@ -186,6 +190,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	_bstr_t c1 = _bstr_t::_bstr_t("DETECTOR polar transform");
 	cb1_row->Comment = _bstr_t::_bstr_t(c1);
 
+	// Open 3D layout
+	IA_Ptr draw = TheSystem->Analyses->New_Analysis_SettingsFirst(AnalysisIDM_Draw3D);
+	IAS_Ptr dSet = draw->GetSettings();
+
+	TheSystem->Analyses->New_StandardSpot();
 
 	char buf[1000];
 	_getcwd(buf, 1000);
