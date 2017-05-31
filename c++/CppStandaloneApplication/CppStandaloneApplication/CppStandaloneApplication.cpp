@@ -130,6 +130,11 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// Open the lens data editor
 	ILensDataEditorPtr lde = TheSystem->LDE;
+	
+
+	// Add a dummy surface to place the stop in the correct location
+	ILDERowPtr dum_row = lde->InsertNewSurfaceAt(lde->NumberOfSurfaces - 2);
+	dum_row->Thickness = RR + z_s - r_s / 2;
 
 	// Perform a coordinate transfor to the center of the Rowland circle, with the entrance slit on
 	// the same x-coordinate as the slit
@@ -137,7 +142,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	ov_row->ChangeType(ov_row->GetSurfaceTypeSettings(SurfaceType_CoordinateBreak));	// change type to coordinate break
 	ISurfaceCoordinateBreakPtr ov_surf = ov_row->SurfaceData;	// acquire surface data to access coordinate break methods
 	ov_surf->Decenter_X = -x_s;	// change the decenter to be on the same x-coordinate as the slit
-	ov_row->Thickness = RR;		// Move to the center of the rowland circle
+	ov_row->Thickness = - z_s + r_s / 2;	// Move to the center of the rowland circle
 	ov_row->Comment = _bstr_t::_bstr_t("Center on Rowland circle");
 
 	// Create the feed optic
