@@ -74,7 +74,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// Design using a custom grating
 	double offset = 4.1 * M_PI / 180.0; // Offset detector from normal
-	double phi_s = 40 * M_PI / 180.0; // (rad)angular position of slit     on Rowland Circle
+	double phi_s = offset + 10 * M_PI / 180.0; // (rad)angular position of slit     on Rowland Circle
 	double phi_g = M_PI - offset; // (rad)angular position of grating  on Rowland Circle
 	double phi_d = offset; // (rad)angular position of detector on Rowland Circle
 	double R_g = 1000; // (mm)grating radius
@@ -118,9 +118,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	double alpha = angle2d(z_gn, x_gn, z_gs, x_gs);
 
 	// Beta angles
-	double beta_0 = angle2d(z_gn, x_gn, z_gd - w_d/2 * cos(phi_d), x_gd + w_d / 2 * sin(phi_d));	// Wavelength on left edge of detector
+	double beta_0 = angle2d(z_gn, x_gn, z_gd - w_d/2 * sin(phi_d), x_gd + w_d / 2 * cos(phi_d));	// Wavelength on left edge of detector
 	double beta_1 = angle2d(z_gn, x_gn, z_gd, x_gd);	// wavelength in center of detector
-	double beta_2 = angle2d(z_gn, x_gn, z_gd + w_d / 2 * cos(phi_d), x_gd - w_d / 2 * sin(phi_d));	// wavelength on right edge of detector
+	double beta_2 = angle2d(z_gn, x_gn, z_gd + w_d / 2 * sin(phi_d), x_gd - w_d / 2 * cos(phi_d));	// wavelength on right edge of detector
 
 
 
@@ -135,14 +135,20 @@ int _tmain(int argc, _TCHAR* argv[])
 	TheSystem->SystemData->Wavelengths->AddWavelength(lambda_0 * 1000.0, 1.0);
 	TheSystem->SystemData->Wavelengths->AddWavelength(lambda_2 * 1000.0, 1.0);
 
+	// Add Fields
+	TheSystem->SystemData->Fields->AddField(0.25, 0.0, 1.0);
+	TheSystem->SystemData->Fields->AddField(-0.25, 0.0, 1.0);
+	TheSystem->SystemData->Fields->AddField(0.0, 0.25, 1.0);
+	TheSystem->SystemData->Fields->AddField(0.0, -0.25, 1.0);
+
 	// Open the lens data editor
 	ILensDataEditorPtr lde = TheSystem->LDE;
 	
 
 	// Add a dummy surface to place the stop in the correct location
-	ILDERowPtr dum_row = lde->InsertNewSurfaceAt(lde->NumberOfSurfaces - 2);
-	dum_row->Thickness = RR + z_s - r_s / 2;
-	dum_row->Comment = _bstr_t::_bstr_t("DUMMY");
+	//ILDERowPtr dum_row = lde->InsertNewSurfaceAt(lde->NumberOfSurfaces - 2);
+	//dum_row->Thickness = RR + z_s - r_s / 2;
+	//dum_row->Comment = _bstr_t::_bstr_t("DUMMY");
 
 	// Perform a coordinate transfor to the center of the Rowland circle, with the entrance slit on
 	// the same x-coordinate as the slit
@@ -150,7 +156,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	ov_row->ChangeType(ov_row->GetSurfaceTypeSettings(SurfaceType_CoordinateBreak));	// change type to coordinate break
 	ISurfaceCoordinateBreakPtr ov_surf = ov_row->SurfaceData;	// acquire surface data to access coordinate break methods
 	ov_surf->Decenter_X = -x_s;	// change the decenter to be on the same x-coordinate as the slit
-	ov_row->Thickness = - z_s + r_s / 2;	// Move to the center of the rowland circle
+	ov_row->Thickness = RR;	// Move to the center of the rowland circle
 	ov_row->Comment = _bstr_t::_bstr_t("Center on Rowland circle");
 
 	// Create the feed optic
