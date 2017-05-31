@@ -73,22 +73,24 @@ int _tmain(int argc, _TCHAR* argv[])
 	TheSystem->New(false);
 
 	// Design using a custom grating
-	double offset = 4.0 * M_PI / 180.0; // Offset detector from normal
+	double offset = 4.1 * M_PI / 180.0; // Offset detector from normal
 	double phi_s = 40 * M_PI / 180.0; // (rad)angular position of slit     on Rowland Circle
 	double phi_g = M_PI - offset; // (rad)angular position of grating  on Rowland Circle
 	double phi_d = offset; // (rad)angular position of detector on Rowland Circle
-	double R_g = 1500; // (mm)grating radius
-	double w_g = 75; // grating diameter
+	double R_g = 1000; // (mm)grating radius
+	double w_g = 100; // grating diameter
 	double d_s = 15e-3; // (mm)width of slit
-	double d_g = 1.0 / 2400.0; // (mm)grating groove period
+	double d_g = 1.0 / 2160.0; // (mm)grating groove period
 	double d_d = 15e-3; // (mm)detector pixel spacing
-	double N_d = 2048; // Number of detector pixels in the dispersion direction
+	int N_d = 2048; // Number of detector pixels in the dispersion direction
 	int m = 1; // spectral order
 	double r_s = 3;		// (mm) Radius of feed optic
 
 
 	double h_d = N_d / 2.0 * d_d;	// Full height of the detector
 	double h_s = h_d * 2.0; // Height of aperture
+
+	double w_d = (N_d - 1) * d_d;
 
 	double RR = R_g / 2.0;	// Radius of rowland circle
 
@@ -115,18 +117,23 @@ int _tmain(int argc, _TCHAR* argv[])
 	// Alpha angle at grating center
 	double alpha = angle2d(z_gn, x_gn, z_gs, x_gs);
 
-	// Beta angle at center of detector
-	double beta = angle2d(z_gn, x_gn, z_gd, x_gd);
+	// Beta angles
+	double beta_0 = angle2d(z_gn, x_gn, z_gd - w_d/2 * cos(phi_d), x_gd + w_d / 2 * sin(phi_d));	// Wavelength on left edge of detector
+	double beta_1 = angle2d(z_gn, x_gn, z_gd, x_gd);	// wavelength in center of detector
+	double beta_2 = angle2d(z_gn, x_gn, z_gd + w_d / 2 * cos(phi_d), x_gd - w_d / 2 * sin(phi_d));	// wavelength on right edge of detector
+
+
 
 	// Wavelength at center of detector
-	double lambda = (d_g / ((double) m)) * (sin(alpha) + sin(beta));
+	double lambda_0 = (d_g / ((double) m)) * (sin(alpha) + sin(beta_0));
+	double lambda_1 = (d_g / ((double)m)) * (sin(alpha) + sin(beta_1));
+	double lambda_2 = (d_g / ((double)m)) * (sin(alpha) + sin(beta_2));
 
-	cout << alpha << endl;
-	cout << beta << endl;
-	cout << lambda << endl;
-
+	// Add wavelengths into zemax
 	TheSystem->SystemData->Aperture->ApertureValue = h_s;
-	TheSystem->SystemData->Wavelengths->GetWavelength(1)->Wavelength = lambda * 1000.0;
+	TheSystem->SystemData->Wavelengths->GetWavelength(1)->Wavelength = lambda_1 * 1000.0;
+	TheSystem->SystemData->Wavelengths->AddWavelength(lambda_0 * 1000.0, 1.0);
+	TheSystem->SystemData->Wavelengths->AddWavelength(lambda_2 * 1000.0, 1.0);
 
 	// Open the lens data editor
 	ILensDataEditorPtr lde = TheSystem->LDE;
@@ -135,6 +142,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	// Add a dummy surface to place the stop in the correct location
 	ILDERowPtr dum_row = lde->InsertNewSurfaceAt(lde->NumberOfSurfaces - 2);
 	dum_row->Thickness = RR + z_s - r_s / 2;
+	dum_row->Comment = _bstr_t::_bstr_t("DUMMY");
 
 	// Perform a coordinate transfor to the center of the Rowland circle, with the entrance slit on
 	// the same x-coordinate as the slit
@@ -185,8 +193,9 @@ int _tmain(int argc, _TCHAR* argv[])
 
 
 	// Create detector
-	ILDERowPtr d_row = lde->GetSurfaceAt(lde->NumberOfSurfaces);
+	ILDERowPtr d_row = lde->GetSurfaceAt(lde->NumberOfSurfaces-1);
 	d_row->Comment = _bstr_t::_bstr_t("DETECTOR");
+	d_row->SemiDiameter = w_d / 2;
 	ILDERowPtr cb1_row = lde->InsertNewSurfaceAt(lde->NumberOfSurfaces - 1);	// create first coordinate break at same index as input surface
 	cb1_row->ChangeType(cb1_row->GetSurfaceTypeSettings(SurfaceType_CoordinateBreak));	// change type to coordinate break
 	ISurfaceCoordinateBreakPtr cb1_surf = cb1_row->SurfaceData;	// acquire surface data to access coordinate break methods

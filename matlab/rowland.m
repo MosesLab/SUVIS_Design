@@ -43,9 +43,6 @@ y_gn = (-y_g)/RR;
 % Alpha angle at grating center (inverting the cross product)
 alpha = angle2d( x_gn, y_gn, x_gs, y_gs );
 
-% Displacement vector from grating to detector
-x_gd = (x_d - x_g);
-y_gd = (y_d - y_g);
 
 % Cartesian coordinates of detector pixels
 w_d = (N_d-1) .* d_d; % Detector width (center of first pixel to center of last pixel)
