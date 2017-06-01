@@ -141,6 +141,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	TheSystem->SystemData->Fields->AddField(0.0, 0.25, 1.0);
 	TheSystem->SystemData->Fields->AddField(0.0, -0.25, 1.0);
 
+	// Enable ray aiming to determine the correct stop location
+	TheSystem->SystemData->RayAiming->RayAiming = RayAimingMethod_Real;
+	TheSystem->SystemData->RayAiming->UseRayAimingCache = true;
+	TheSystem->SystemData->RayAiming->AutomaticallyCalculatePupilShiftsIsChecked = true;
+
 	// Open the lens data editor
 	ILensDataEditorPtr lde = TheSystem->LDE;
 	
@@ -194,6 +199,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	g_row->Material = _bstr_t::_bstr_t("MIRROR");
 	g_row->Radius = R_g;
 	g_row->Comment = _bstr_t::_bstr_t("GRATING");
+	g_row->TypeData->SurfaceCannotBeHyperhemispheric = true;
 	move_polar(lde,g_row,  -RR, phi_g - M_PI);
 	rot_z(lde, lde->GetSurfaceAt(lde->NumberOfSurfaces - 4), M_PI / 2);
 
@@ -214,7 +220,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	IA_Ptr draw = TheSystem->Analyses->New_Analysis_SettingsFirst(AnalysisIDM_Draw3D);
 	IAS_Ptr dSet = draw->GetSettings();
 
-	TheSystem->Analyses->New_StandardSpot();
+	//TheSystem->Analyses->New_StandardSpot();
+
+	TheSystem->Analyses->New_FullFieldSpot();
 
 	char buf[1000];
 	_getcwd(buf, 1000);
