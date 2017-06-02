@@ -72,6 +72,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	// Open a new Zemax file
 	TheSystem->New(false);
 
+	int ray_density = 200;
+
 	// Design using a custom grating
 	double offset = 4.1 * M_PI / 180.0; // Offset detector from normal
 	double phi_s = offset + 10 * M_PI / 180.0; // (rad)angular position of slit     on Rowland Circle
@@ -122,12 +124,36 @@ int _tmain(int argc, _TCHAR* argv[])
 	double beta_1 = angle2d(z_gn, x_gn, z_gd, x_gd);	// wavelength in center of detector
 	double beta_2 = angle2d(z_gn, x_gn, z_gd + w_d / 2 * sin(phi_d), x_gd - w_d / 2 * cos(phi_d));	// wavelength on right edge of detector
 
-
-
 	// Wavelength at center of detector
 	double lambda_0 = (d_g / ((double) m)) * (sin(alpha) + sin(beta_0));
 	double lambda_1 = (d_g / ((double)m)) * (sin(alpha) + sin(beta_1));
 	double lambda_2 = (d_g / ((double)m)) * (sin(alpha) + sin(beta_2));
+
+	// Calculate vectors from center of grating to edge of grating
+	// in the plane of the Rowland circle
+	double z_g_plus = -w_g * x_gn / 2;
+	double x_g_plus = -w_g * z_gn / 2;
+	double z_g_minus = -z_g_plus;
+	double x_g_minus = -x_g_plus;
+
+
+	// Calculate the vectors from the edge of the grating to the virtual image
+	// inside the feed optic
+	double z_gs_plus = z_gs - z_g_plus;
+	double x_gs_plus = x_gs - x_g_plus;
+	double z_gs_minus = z_gs - z_g_minus;
+	double x_gs_minus = x_gs - x_g_minus;
+
+	// Find the vector from the virtual image to the surface of the feed optic
+	double z_v_zero = -(r_s / 2) * z_gs / (z_gs * z_gs + x_gs * x_gs);
+	double x_v_zero = -(r_s / 2) * x_gs / (z_gs * z_gs + x_gs * x_gs);
+	double z_v_plus = -(r_s / 2) * z_gs_plus / (z_gs_plus * z_gs_plus + x_gs_plus * x_gs_plus);
+	double x_v_plus = -(r_s / 2) * x_gs_plus / (z_gs_plus * z_gs_plus + x_gs_plus * x_gs_plus);
+	double z_v_minus = -(r_s / 2) * z_gs_minus / (z_gs_minus * z_gs_minus + x_gs_minus * x_gs_minus);
+	double x_v_minus = -(r_s / 2) * x_gs_minus / (z_gs_minus * z_gs_minus + x_gs_minus * x_gs_minus);
+	
+
+	
 
 	// Add wavelengths into zemax
 	TheSystem->SystemData->Aperture->ApertureValue = h_s;
@@ -178,6 +204,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	rect->XHalfWidth =  r_s;		// x half width equal to radius of feed optic
 	rect->YHalfWidth = h_s; // y half width equal to double the height of the detector
 	s_row->ApertureData->ChangeApertureTypeSettings(s_apType);
+	s_row->TypeData->IsStop = true;
 	s_row->Material = _bstr_t::_bstr_t("MIRROR");
 	s_row->Comment = _bstr_t::_bstr_t("FEED OPTIC");
 	move_polar(lde, s_row, RR - r_s, phi_s);
