@@ -145,12 +145,12 @@ int _tmain(int argc, _TCHAR* argv[])
 	double x_gs_minus = x_gs - x_g_minus;
 
 	// Find the vector from the virtual image to the surface of the feed optic
-	double z_v_zero = -(r_s / 2) * z_gs / (z_gs * z_gs + x_gs * x_gs);
-	double x_v_zero = -(r_s / 2) * x_gs / (z_gs * z_gs + x_gs * x_gs);
-	double z_v_plus = -(r_s / 2) * z_gs_plus / (z_gs_plus * z_gs_plus + x_gs_plus * x_gs_plus);
-	double x_v_plus = -(r_s / 2) * x_gs_plus / (z_gs_plus * z_gs_plus + x_gs_plus * x_gs_plus);
-	double z_v_minus = -(r_s / 2) * z_gs_minus / (z_gs_minus * z_gs_minus + x_gs_minus * x_gs_minus);
-	double x_v_minus = -(r_s / 2) * x_gs_minus / (z_gs_minus * z_gs_minus + x_gs_minus * x_gs_minus);
+	double z_v_zero = -(r_s / 2.0) * z_gs / sqrt(z_gs * z_gs + x_gs * x_gs);
+	double x_v_zero = -(r_s / 2.0) * x_gs / sqrt(z_gs * z_gs + x_gs * x_gs);
+	double z_v_plus = -(r_s / 2.0) * z_gs_plus / sqrt(z_gs_plus * z_gs_plus + x_gs_plus * x_gs_plus);
+	double x_v_plus = -(r_s / 2.0) * x_gs_plus / sqrt(z_gs_plus * z_gs_plus + x_gs_plus * x_gs_plus);
+	double z_v_minus = -(r_s / 2.0) * z_gs_minus / sqrt(z_gs_minus * z_gs_minus + x_gs_minus * x_gs_minus);
+	double x_v_minus = -(r_s / 2.0) * x_gs_minus / sqrt(z_gs_minus * z_gs_minus + x_gs_minus * x_gs_minus);
 	
 
 	
@@ -162,39 +162,45 @@ int _tmain(int argc, _TCHAR* argv[])
 	TheSystem->SystemData->Wavelengths->AddWavelength(lambda_2 * 1000.0, 1.0);
 
 	// Add Fields
-	TheSystem->SystemData->Fields->AddField(0.25, 0.0, 1.0);
-	TheSystem->SystemData->Fields->AddField(-0.25, 0.0, 1.0);
-	TheSystem->SystemData->Fields->AddField(0.0, 0.25, 1.0);
-	TheSystem->SystemData->Fields->AddField(0.0, -0.25, 1.0);
+	double vdx = (x_v_plus + x_v_minus) / 2.0 / (TheSystem->SystemData->Aperture->ApertureValue / 2.0);
+	double vcx = 1 - (abs(x_v_plus - x_v_minus) / 2.0) / (TheSystem->SystemData->Aperture->ApertureValue / 2.0);
+	IFieldPtr f0 = TheSystem->SystemData->Fields->GetField(1);
+	IFieldPtr f1 = TheSystem->SystemData->Fields->AddField(0.25, 0.0, 1.0);
+	IFieldPtr f2 = TheSystem->SystemData->Fields->AddField(-0.25, 0.0, 1.0);
+	IFieldPtr f3 = TheSystem->SystemData->Fields->AddField(0.0, 0.25, 1.0);
+	IFieldPtr f4 = TheSystem->SystemData->Fields->AddField(0.0, -0.25, 1.0);
+	f0->VDX = vdx;
+	f1->VDX = vdx;
+	f2->VDX = vdx;
+	f3->VDX = vdx;
+	f4->VDX = vdx;
+	f0->VCX = vcx;
+	f1->VCX = vcx;
+	f2->VCX = vcx;
+	f3->VCX = vcx;
+	f4->VCX = vcx;
 
 	// Enable ray aiming to determine the correct stop location
-	TheSystem->SystemData->RayAiming->RayAiming = RayAimingMethod_Real;
-	TheSystem->SystemData->RayAiming->UseRayAimingCache = true;
-	TheSystem->SystemData->RayAiming->AutomaticallyCalculatePupilShiftsIsChecked = true;
+	//TheSystem->SystemData->RayAiming->RayAiming = RayAimingMethod_Real;
+	//TheSystem->SystemData->RayAiming->UseRayAimingCache = true;
+	//TheSystem->SystemData->RayAiming->AutomaticallyCalculatePupilShiftsIsChecked = true;
 
 	// Open the lens data editor
 	ILensDataEditorPtr lde = TheSystem->LDE;
 	
 
 	// Add a dummy surface to place the stop in the correct location
-	//ILDERowPtr dum_row = lde->InsertNewSurfaceAt(lde->NumberOfSurfaces - 2);
-	//dum_row->Thickness = RR + z_s - r_s / 2;
-	//dum_row->Comment = _bstr_t::_bstr_t("DUMMY");
+	ILDERowPtr dum_row = lde->GetSurfaceAt(1);
+	dum_row->Thickness = RR + z_s - r_s / 2.0;
+	dum_row->Comment = _bstr_t::_bstr_t("DUMMY");
 
-	// Perform a coordinate transfor to the center of the Rowland circle, with the entrance slit on
-	// the same x-coordinate as the slit
-	ILDERowPtr ov_row = lde->InsertNewSurfaceAt(lde->NumberOfSurfaces - 1);	// grab the stop surface
-	ov_row->ChangeType(ov_row->GetSurfaceTypeSettings(SurfaceType_CoordinateBreak));	// change type to coordinate break
-	ISurfaceCoordinateBreakPtr ov_surf = ov_row->SurfaceData;	// acquire surface data to access coordinate break methods
-	ov_surf->Decenter_X = -x_s;	// change the decenter to be on the same x-coordinate as the slit
-	ov_row->Thickness = RR;	// Move to the center of the rowland circle
-	ov_row->Comment = _bstr_t::_bstr_t("Center on Rowland circle");
+
 
 	// Create the feed optic
-	ILDERowPtr so_row = lde->InsertNewSurfaceAt(lde->NumberOfSurfaces - 1);	// Create rotation offset surface
-	so_row->ChangeType(so_row->GetSurfaceTypeSettings(SurfaceType_CoordinateBreak));	// change type to coordinate break
-	so_row->Thickness = r_s / 2;
-	so_row->Comment = _bstr_t::_bstr_t("FEED OPTIC rotation offset");
+	//ILDERowPtr so_row = lde->InsertNewSurfaceAt(lde->NumberOfSurfaces - 1);	// Create rotation offset surface
+	//so_row->ChangeType(so_row->GetSurfaceTypeSettings(SurfaceType_CoordinateBreak));	// change type to coordinate break
+	//so_row->Thickness = r_s / 2;
+	//so_row->Comment = _bstr_t::_bstr_t("FEED OPTIC rotation offset");
 	ILDERowPtr s_row = lde->InsertNewSurfaceAt(lde->NumberOfSurfaces - 1);	// Insert the surface before the image surface
 	s_row->ChangeType(s_row->GetSurfaceTypeSettings(SurfaceType_Toroidal));		// Change the surface type to toroidal
 	ISurfaceToroidalPtr s_surf = s_row->SurfaceData;
@@ -207,14 +213,23 @@ int _tmain(int argc, _TCHAR* argv[])
 	s_row->TypeData->IsStop = true;
 	s_row->Material = _bstr_t::_bstr_t("MIRROR");
 	s_row->Comment = _bstr_t::_bstr_t("FEED OPTIC");
-	move_polar(lde, s_row, RR - r_s, phi_s);
-	ILDERowPtr si_row = lde->InsertNewSurfaceAt(lde->NumberOfSurfaces - 1);	// Create rotation offset surface
-	si_row->ChangeType(si_row->GetSurfaceTypeSettings(SurfaceType_CoordinateBreak));	// change type to coordinate break
-	ISolveDataPtr si_solve = si_row->ThicknessCell->CreateSolveType(SolveType_SurfacePickup);
-	si_solve->Get_S_SurfacePickup()->Surface = so_row->SurfaceNumber;
-	si_solve->Get_S_SurfacePickup()->ScaleFactor = -1;
-	si_row->ThicknessCell->SetSolveData(si_solve);
-	si_row->Comment = _bstr_t::_bstr_t("FEED OPTIC inverse rotation offset");
+	// move_polar(lde, s_row, RR - r_s, phi_s);
+	//ILDERowPtr si_row = lde->InsertNewSurfaceAt(lde->NumberOfSurfaces - 1);	// Create rotation offset surface
+	//si_row->ChangeType(si_row->GetSurfaceTypeSettings(SurfaceType_CoordinateBreak));	// change type to coordinate break
+	//ISolveDataPtr si_solve = si_row->ThicknessCell->CreateSolveType(SolveType_SurfacePickup);
+	//si_solve->Get_S_SurfacePickup()->Surface = so_row->SurfaceNumber;
+	//si_solve->Get_S_SurfacePickup()->ScaleFactor = -1;
+	//si_row->ThicknessCell->SetSolveData(si_solve);
+	//si_row->Comment = _bstr_t::_bstr_t("FEED OPTIC inverse rotation offset");
+
+	// Perform a coordinate transfor to the center of the Rowland circle, with the entrance slit on
+	// the same x-coordinate as the slit
+	ILDERowPtr ov_row = lde->InsertNewSurfaceAt(lde->NumberOfSurfaces - 1);	// grab the stop surface
+	ov_row->ChangeType(ov_row->GetSurfaceTypeSettings(SurfaceType_CoordinateBreak));	// change type to coordinate break
+	ISurfaceCoordinateBreakPtr ov_surf = ov_row->SurfaceData;	// acquire surface data to access coordinate break methods
+	ov_surf->Decenter_X = -x_s;	// change the decenter to be on the same x-coordinate as the slit
+	ov_row->Thickness = -z_s + r_s / 2.0;	// Move to the center of the rowland circle
+	ov_row->Comment = _bstr_t::_bstr_t("Center on Rowland circle");
 
 	// Create the diffraction grating
 	ILDERowPtr g_row = lde->InsertNewSurfaceAt(lde->NumberOfSurfaces - 1);	// Insert the surface before the image surface

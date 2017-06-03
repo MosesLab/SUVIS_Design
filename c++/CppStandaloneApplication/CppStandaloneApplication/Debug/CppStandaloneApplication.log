@@ -1,5 +1,3 @@
-﻿  stdafx.cpp
-  CppStandaloneApplication.cpp
-  LINK : D:\Users\krg\Roy Smart\School\Research\SUVIS_Design\c++\CppStandaloneApplication\Debug\CppStandaloneApplication.exe not found or not built by the last incremental link; performing full link
-  CppStandaloneApplication.vcxproj -> D:\Users\krg\Roy Smart\School\Research\SUVIS_Design\c++\CppStandaloneApplication\Debug\CppStandaloneApplication.exe
-  CppStandaloneApplication.vcxproj -> D:\Users\krg\Roy Smart\School\Research\SUVIS_Design\c++\CppStandaloneApplication\Debug\CppStandaloneApplication.pdb (Partial PDB)
+﻿  CppStandaloneApplication.cpp
+  CppStandaloneApplication.vcxproj -> E:\Users\byrdie\School\Research\SUVIS_Design\c++\CppStandaloneApplication\Debug\CppStandaloneApplication.exe
+  CppStandaloneApplication.vcxproj -> E:\Users\byrdie\School\Research\SUVIS_Design\c++\CppStandaloneApplication\Debug\CppStandaloneApplication.pdb (Partial PDB)
