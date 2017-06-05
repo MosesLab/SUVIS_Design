@@ -76,7 +76,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// Design using a custom grating
 	double offset = 4.1 * M_PI / 180.0; // Offset detector from normal
-	double phi_s = offset + 10 * M_PI / 180.0; // (rad)angular position of slit     on Rowland Circle
+	double phi_s = offset + 30 * M_PI / 180.0; // (rad)angular position of slit     on Rowland Circle
 	double phi_g = M_PI - offset; // (rad)angular position of grating  on Rowland Circle
 	double phi_d = offset; // (rad)angular position of detector on Rowland Circle
 	double R_g = 1000; // (mm)grating radius
@@ -183,7 +183,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	// Enable ray aiming to determine the correct stop location
 	//TheSystem->SystemData->RayAiming->RayAiming = RayAimingMethod_Real;
 	//TheSystem->SystemData->RayAiming->UseRayAimingCache = true;
-	//TheSystem->SystemData->RayAiming->AutomaticallyCalculatePupilShiftsIsChecked = true;
+	//TheSystem->SystemData->RayAiming->AutomaticallyCalculatePupilShiftsIsChecked = false;
+	//TheSystem->SystemData->RayAiming->PupilShiftX = (x_v_plus + x_v_minus) / 2.0;
+	//TheSystem->SystemData->RayAiming->PupilCompressX = vcx;
 
 	// Open the lens data editor
 	ILensDataEditorPtr lde = TheSystem->LDE;
