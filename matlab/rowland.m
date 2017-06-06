@@ -83,7 +83,7 @@ x0_g = -x_g; % center of curvature of grating
 y0_g = -y_g; % center of curvature of grating
 subtent_g = atan(w_g/R_g);
 thetas_g = [(-subtent_g/2):0.01:0, 0:0.01:(subtent_g/2)];
-thetas_g += atan((y_g-y0_g)/(x_g-x0_g));
+thetas_g = thetas_g + atan((y_g-y0_g)/(x_g-x0_g));
 xs_g = x0_g - R_g .* cos(thetas_g);
 ys_g = y0_g - R_g .* sin(thetas_g);
 plot(xs_g, ys_g, 'g-', 'LineWidth',5)

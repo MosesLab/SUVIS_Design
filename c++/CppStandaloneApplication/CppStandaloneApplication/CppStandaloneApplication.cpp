@@ -38,7 +38,7 @@ void handleError(std::string msg);
 void logInfo(std::string msg);
 void finishStandaloneApplication(IZOSAPI_ApplicationPtr TheApplication);
 
-int _tmain(int argc, char* argv[])
+int _tmain(int argc, _TCHAR* argv[])
 {
 	CoInitialize(NULL);
 
@@ -89,17 +89,17 @@ int _tmain(int argc, char* argv[])
 	double r_s = 3;		// (mm) Radius of feed optic
 
 	
-	double phi_s = strtod(argv[1], 0);	 // (rad)angular position of slit     on Rowland Circle
-	double phi_g = strtod(argv[2], 0);	// (rad)angular position of grating  on Rowland Circle
-	double phi_d = strtod(argv[3], 0);	 // (rad)angular position of detector on Rowland Circle
-	double R_g = strtod(argv[4], 0); // (mm)grating radius
-	double w_g = strtod(argv[5], 0);	 // grating diameter
-	double d_s = strtod(argv[6], 0);	 // (mm)width of slit
-	double d_g = strtod(argv[7], 0);	 // (mm)grating groove period
-	double d_d = strtod(argv[8], 0); ; // (mm)detector pixel spacing
-	int N_d = strtod(argv[9], 0); ; // Number of detector pixels in the dispersion direction
-	int m = (int) strtod(argv[10], 0); ; // spectral order
-	double r_s = strtod(argv[11], 0);			// (mm) Radius of feed optic
+	//double phi_s = _tcstod(argv[1], NULL);	 // (rad)angular position of slit     on Rowland Circle
+	//double phi_g = _tcstod(argv[2], NULL);	// (rad)angular position of grating  on Rowland Circle
+	//double phi_d = _tcstod(argv[3], NULL);	 // (rad)angular position of detector on Rowland Circle
+	//double R_g = _tcstod(argv[4], NULL); // (mm)grating radius
+	//double w_g = _tcstod(argv[5], NULL);	 // grating diameter
+	//double d_s = _tcstod(argv[6], NULL);	 // (mm)width of slit
+	//double d_g = _tcstod(argv[7], NULL);	 // (mm)grating groove period
+	//double d_d = _tcstod(argv[8], NULL); ; // (mm)detector pixel spacing
+	//int N_d = stoi(argv[9]); ; // Number of detector pixels in the dispersion direction
+	//int m =  stoi(argv[10]); ; // spectral order
+	//double r_s = _tcstod(argv[11], NULL);			// (mm) Radius of feed optic
 
 
 	double h_d = N_d / 2.0 * d_d;	// Full height of the detector
@@ -279,18 +279,32 @@ int _tmain(int argc, char* argv[])
 
 	//TheSystem->Analyses->New_StandardSpot();
 
-	TheSystem->Analyses->New_FullFieldSpot();
+	IA_Ptr spot = TheSystem->Analyses->New_RayTrace();
+	spot->WaitForCompletion();
+	IAR_Ptr spot_results = spot->GetResults();
+
+	SAFEARRAY * spot_pts = spot_results->RayData;
+	void * pv;
+	SafeArrayAccessData(spot_pts, &pv);
+	double * spot_data = reinterpret_cast<double *>(pv);
+	FILE * spot_file = fopen("spot.dat", "wb");
+	fwrite(spot_data, sizeof(double), 1, spot_file);
+	//cout << spot_results->NumberOfDataGrids << endl;
+	//cout << spot_results->NumberOfDataGridsRgb << endl;
+	//cout << spot_results->NumberOfDataScatterPoints << endl;
+	//cout << spot_results->NumberOfDataScatterPointsRgb << endl;
+	//cout << spot_results->NumberOfDataSeries << endl;
+	//cout << spot_results->NumberOfDataSeriesRgb << endl;
+	//cout << spot_results->NumberOfRayData << endl;
+
 
 	char buf[1000];
 	_getcwd(buf, 1000);
 	string cp(buf);
-	string zp = cp + "../../../../zemax/suvis_design.zmx";
+	string zp = cp + "/../zemax/suvis_design.zmx";
 	replace(zp.begin(), zp.end(), '\\', '/');
-	cout << zp << endl;
-
-	cout << system("echo $(SolutionDir)") << endl;
-
 	TheSystem->SaveAs(_bstr_t::_bstr_t(zp.c_str()));
+	cout << zp << endl;
 	
 
 	TheSystem->Close(false);
