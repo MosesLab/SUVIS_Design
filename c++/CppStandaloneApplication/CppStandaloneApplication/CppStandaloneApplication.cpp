@@ -38,7 +38,7 @@ void handleError(std::string msg);
 void logInfo(std::string msg);
 void finishStandaloneApplication(IZOSAPI_ApplicationPtr TheApplication);
 
-int _tmain(int argc, _TCHAR* argv[])
+int _tmain(int argc, char* argv[])
 {
 	CoInitialize(NULL);
 
@@ -87,6 +87,19 @@ int _tmain(int argc, _TCHAR* argv[])
 	int N_d = 2048; // Number of detector pixels in the dispersion direction
 	int m = 1; // spectral order
 	double r_s = 3;		// (mm) Radius of feed optic
+
+	
+	double phi_s = strtod(argv[1], 0);	 // (rad)angular position of slit     on Rowland Circle
+	double phi_g = strtod(argv[2], 0);	// (rad)angular position of grating  on Rowland Circle
+	double phi_d = strtod(argv[3], 0);	 // (rad)angular position of detector on Rowland Circle
+	double R_g = strtod(argv[4], 0); // (mm)grating radius
+	double w_g = strtod(argv[5], 0);	 // grating diameter
+	double d_s = strtod(argv[6], 0);	 // (mm)width of slit
+	double d_g = strtod(argv[7], 0);	 // (mm)grating groove period
+	double d_d = strtod(argv[8], 0); ; // (mm)detector pixel spacing
+	int N_d = strtod(argv[9], 0); ; // Number of detector pixels in the dispersion direction
+	int m = (int) strtod(argv[10], 0); ; // spectral order
+	double r_s = strtod(argv[11], 0);			// (mm) Radius of feed optic
 
 
 	double h_d = N_d / 2.0 * d_d;	// Full height of the detector
