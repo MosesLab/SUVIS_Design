@@ -279,23 +279,27 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	//TheSystem->Analyses->New_StandardSpot();
 
-	IA_Ptr spot = TheSystem->Analyses->New_RayTrace();
-	spot->WaitForCompletion();
+	IA_Ptr spot = TheSystem->Analyses->New_StandardSpot();
+	spot->ApplyAndWaitForCompletion();
 	IAR_Ptr spot_results = spot->GetResults();
-
-	SAFEARRAY * spot_pts = spot_results->RayData;
-	void * pv;
-	SafeArrayAccessData(spot_pts, &pv);
-	double * spot_data = reinterpret_cast<double *>(pv);
-	FILE * spot_file = fopen("spot.dat", "wb");
-	fwrite(spot_data, sizeof(double), 1, spot_file);
-	//cout << spot_results->NumberOfDataGrids << endl;
-	//cout << spot_results->NumberOfDataGridsRgb << endl;
-	//cout << spot_results->NumberOfDataScatterPoints << endl;
-	//cout << spot_results->NumberOfDataScatterPointsRgb << endl;
-	//cout << spot_results->NumberOfDataSeries << endl;
-	//cout << spot_results->NumberOfDataSeriesRgb << endl;
 	//cout << spot_results->NumberOfRayData << endl;
+	//SAFEARRAY * spot_pts = spot_results->RayData
+	//void * pv;
+	//SafeArrayAccessData(spot_pts, &pv);
+	//IAR_RayDataPtr * spot_data = reinterpret_cast<IAR_RayDataPtr *>(pv);
+	//cout << (*spot_data)->NumRays << endl;
+	
+
+	//FILE * spot_file = fopen("spot.dat", "wb");
+	//fwrite(spot_data, sizeof(double), 1, spot_file);
+	cout << spot_results->NumberOfDataGrids << endl;
+	cout << spot_results->NumberOfDataGridsRgb << endl;
+	cout << spot_results->NumberOfDataScatterPoints << endl;
+	cout << spot_results->NumberOfDataScatterPointsRgb << endl;
+	cout << spot_results->NumberOfDataSeries << endl;
+	cout << spot_results->NumberOfDataSeriesRgb << endl;
+	cout << spot_results->NumberOfRayData << endl;
+	cout << spot_results->SpotData->get_NumberOfFields << endl;
 
 
 	char buf[1000];
