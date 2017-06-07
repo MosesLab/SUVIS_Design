@@ -1,9 +1,9 @@
-﻿// Created by Microsoft (R) C/C++ Compiler Version 14.10.25019.0 (9a2f1ab6).
+﻿// Created by Microsoft (R) C/C++ Compiler Version 14.10.25019.0 (6f962cc2).
 //
-// e:\users\byrdie\school\research\suvis_design\c++\cppstandaloneapplication\cppstandaloneapplication\debug\zosapi.tlh
+// d:\users\krg\roy smart\school\research\suvis_design\c++\cppstandaloneapplication\cppstandaloneapplication\debug\zosapi.tlh
 //
 // C++ source equivalent of type library C:\\Program Files\\Zemax OpticStudio\\ZOS-API\\Libraries\\ZOSAPI.tlb
-// compiler-generated file created 06/06/17 at 22:46:28 - DO NOT EDIT!
+// compiler-generated file created 06/07/17 at 12:32:48 - DO NOT EDIT!
 
 #pragma once
 #pragma pack(push, 8)
@@ -55,7 +55,7 @@ ZOSAPI_Connection;
 // Wrapper method implementations
 //
 
-#include "e:\users\byrdie\school\research\suvis_design\c++\cppstandaloneapplication\cppstandaloneapplication\debug\zosapi.tli"
+#include "d:\users\krg\roy smart\school\research\suvis_design\c++\cppstandaloneapplication\cppstandaloneapplication\debug\zosapi.tli"
 
 } // namespace ZOSAPI
 

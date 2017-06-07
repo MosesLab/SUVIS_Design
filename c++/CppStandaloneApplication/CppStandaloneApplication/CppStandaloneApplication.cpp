@@ -11,6 +11,8 @@
 
 #include <cmath>
 
+#include <sstream>
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <ctime>
@@ -18,6 +20,12 @@
 #include <assert.h>
 #include <direct.h>
 #include <algorithm>
+#include <vector>
+#include <locale>
+#include <clocale>
+#include <codecvt>
+
+
 
 
 
@@ -37,6 +45,10 @@ void rot_z(ILensDataEditorPtr lde, ILDERowPtr row, double phi);
 void handleError(std::string msg);
 void logInfo(std::string msg);
 void finishStandaloneApplication(IZOSAPI_ApplicationPtr TheApplication);
+vector<double> getRayXY(string file);
+vector<vector<string>> parse_ray_file(string file);
+void print_ray_file(vector<vector<string>> mat);
+string ws2s(wstring wstr);
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -279,28 +291,24 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	//TheSystem->Analyses->New_StandardSpot();
 
-	IA_Ptr spot = TheSystem->Analyses->New_StandardSpot();
-	spot->ApplyAndWaitForCompletion();
-	IAR_Ptr spot_results = spot->GetResults();
-	//cout << spot_results->NumberOfRayData << endl;
-	//SAFEARRAY * spot_pts = spot_results->RayData
-	//void * pv;
-	//SafeArrayAccessData(spot_pts, &pv);
-	//IAR_RayDataPtr * spot_data = reinterpret_cast<IAR_RayDataPtr *>(pv);
-	//cout << (*spot_data)->NumRays << endl;
-	
+	//IA_Ptr ray = TheSystem->Analyses->New_RayTrace();
+	//ray->WaitForCompletion();
+	//IAS_RayTracePtr ray_s = ray->GetSettings();
+	//ray_s->Hx = 0.0;
+	//ray_s->Hy = 0.0;
+	//ray_s->Px = 0.0;
+	//ray_s->Py = 1.0;
+	//ray_s->Type = RayTraceType_DirectionCosines;
+	//ray_s->UseGlobal = false;
+	//ray->ApplyAndWaitForCompletion();
+	//IAR_Ptr ray_r = ray->GetResults();
+	//ray_r->GetTextFile(_bstr_t::_bstr_t("D:/Users/krg/Roy Smart/School/Research/SUVIS_Design/test.txt"));
+	//
+	//
+	//vector<vector<string>> ray_dat = parse_ray_file("D:/Users/krg/Roy Smart/School/Research/SUVIS_Design/test.txt");
+	//print_ray_file(ray_dat);
 
-	//FILE * spot_file = fopen("spot.dat", "wb");
-	//fwrite(spot_data, sizeof(double), 1, spot_file);
-	cout << spot_results->NumberOfDataGrids << endl;
-	cout << spot_results->NumberOfDataGridsRgb << endl;
-	cout << spot_results->NumberOfDataScatterPoints << endl;
-	cout << spot_results->NumberOfDataScatterPointsRgb << endl;
-	cout << spot_results->NumberOfDataSeries << endl;
-	cout << spot_results->NumberOfDataSeriesRgb << endl;
-	cout << spot_results->NumberOfRayData << endl;
-	cout << spot_results->SpotData->get_NumberOfFields << endl;
-
+	IBatchRayTracePtr rt = TheSystem->Tools->OpenBatchRayTrace();
 
 	char buf[1000];
 	_getcwd(buf, 1000);
@@ -389,6 +397,52 @@ void rot_z(ILensDataEditorPtr lde, ILDERowPtr row, double phi) {
 	_bstr_t c3 = _bstr_t::_bstr_t(" unrotate z");
 	cb3_row->Comment = _bstr_t::_bstr_t(row_com + c3);
 
+}
+
+vector<vector<string>> parse_ray_file(string file) {
+	
+	vector<vector<string>> tok_mat;
+	
+	// Copy UTF16 file into standard string
+	std::stringstream ss;
+	std::ifstream fin(file);
+	ss << fin.rdbuf(); // dump file contents into a stringstream
+	std::string const &s = ss.str();
+	std::wstring ws;
+	ws.resize(s.size() / sizeof(wchar_t));
+	std::memcpy(&ws[0], s.c_str(), s.size()); // copy data into wstring
+
+	string ray_str = ws2s(ws);
+	istringstream f_stream(ray_str);
+
+	string ray_line;
+	while (getline(f_stream, ray_line)) {
+		istringstream l_stream(ray_line);
+		vector<string> tok_line;
+		string token;
+		while (getline(l_stream, token, '\t')) {
+			tok_line.push_back(token);
+		}
+		tok_mat.push_back(tok_line);
+	}
+
+	return tok_mat;
+}
+
+void print_ray_file(vector<vector<string>> mat) {
+	for (unsigned int i = 0; i < mat.size(); i++) {
+		vector<string> row = mat[i];
+		for (unsigned int j = 0; j < row.size(); j++) {
+			cout << row[j] << "_";
+		}
+		cout << endl;
+	}
+}
+
+string ws2s(wstring wstr)
+{
+	string str(wstr.begin(), wstr.end());
+	return str;
 }
 
 void handleError(std::string msg)
