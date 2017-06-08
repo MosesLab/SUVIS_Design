@@ -73,4 +73,3 @@ args = strcat(num2str(phi_s), " ", num2str(phi_g), " ", num2str(phi_d), " ", num
 
 system(char(strcat(path, args)));
 
-

@@ -85,37 +85,37 @@ int _tmain(int argc, _TCHAR* argv[])
 	TheSystem->New(false);
 
 	// Design using a custom grating
-	double offset = 4.1 * M_PI / 180.0; // Offset detector from normal
-	double phi_s = offset + 30 * M_PI / 180.0; // (rad)angular position of slit     on Rowland Circle
-	double phi_g = M_PI - offset; // (rad)angular position of grating  on Rowland Circle
-	double phi_d = offset; // (rad)angular position of detector on Rowland Circle
-	double R_g = 1000; // (mm)grating radius
-	double w_g = 100; // grating diameter
-	double d_s = 15e-3; // (mm)width of slit
-	double d_g = 1.0 / 2160.0; // (mm)grating groove period
-	double d_d = 15e-3; // (mm)detector pixel spacing
-	int N_d = 2048; // Number of detector pixels in the dispersion direction
-	int m = 1; // spectral order
-	double r_s = 3;		// (mm) Radius of feed optic
+	//double offset = 4.1 * M_PI / 180.0; // Offset detector from normal
+	//double phi_s = offset + 30 * M_PI / 180.0; // (rad)angular position of slit     on Rowland Circle
+	//double phi_g = M_PI - offset; // (rad)angular position of grating  on Rowland Circle
+	//double phi_d = offset; // (rad)angular position of detector on Rowland Circle
+	//double R_g = 1000; // (mm)grating radius
+	//double w_g = 100; // grating diameter
+	//double d_s = 15e-3; // (mm)width of slit
+	//double d_g = 1.0 / 2160.0; // (mm)grating groove period
+	//double d_d = 15e-3; // (mm)detector pixel spacing
+	//int N_d = 2048; // Number of detector pixels in the dispersion direction
+	//int m = 1; // spectral order
+	//double r_s = 3;		// (mm) Radius of feed optic
 
-	
-	//double phi_s = _tcstod(argv[1], NULL);	 // (rad)angular position of slit     on Rowland Circle
-	//double phi_g = _tcstod(argv[2], NULL);	// (rad)angular position of grating  on Rowland Circle
-	//double phi_d = _tcstod(argv[3], NULL);	 // (rad)angular position of detector on Rowland Circle
-	//double R_g = _tcstod(argv[4], NULL); // (mm)grating radius
-	//double w_g = _tcstod(argv[5], NULL);	 // grating diameter
-	//double d_s = _tcstod(argv[6], NULL);	 // (mm)width of slit
-	//double d_g = _tcstod(argv[7], NULL);	 // (mm)grating groove period
-	//double d_d = _tcstod(argv[8], NULL); ; // (mm)detector pixel spacing
-	//int N_d = stoi(argv[9]); ; // Number of detector pixels in the dispersion direction
-	//int m =  stoi(argv[10]); ; // spectral order
-	//double r_s = _tcstod(argv[11], NULL);			// (mm) Radius of feed optic
+
+	double phi_s = _tcstod(argv[1], NULL);	 // (rad)angular position of slit     on Rowland Circle
+	double phi_g = _tcstod(argv[2], NULL);	// (rad)angular position of grating  on Rowland Circle
+	double phi_d = _tcstod(argv[3], NULL);	 // (rad)angular position of detector on Rowland Circle
+	double R_g = _tcstod(argv[4], NULL); // (mm)grating radius
+	double w_g = _tcstod(argv[5], NULL);	 // grating diameter
+	double d_s = _tcstod(argv[6], NULL);	 // (mm)width of slit
+	double d_g = _tcstod(argv[7], NULL);	 // (mm)grating groove period
+	double d_d = _tcstod(argv[8], NULL); ; // (mm)detector pixel spacing
+	int N_d = stoi(argv[9]); ; // Number of detector pixels in the dispersion direction
+	int m =  stoi(argv[10]); ; // spectral order
+	double r_s = _tcstod(argv[11], NULL);			// (mm) Radius of feed optic
 
 
 	double h_d = N_d / 2.0 * d_d;	// Full height of the detector
 	double h_s = h_d * 2.0; // Height of aperture
 
-	double w_d = (N_d - 1) * d_d;
+	double w_d = (N_d)* d_d;
 
 	double RR = R_g / 2.0;	// Radius of rowland circle
 
@@ -132,7 +132,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	double x_gs = x_s - x_g;
 
 	// Grating normal unit vector
-	double z_gn = - z_g / RR;
+	double z_gn = -z_g / RR;
 	double x_gn = -x_g / RR;
 
 	// Displacement vector from grating to detector
@@ -143,12 +143,12 @@ int _tmain(int argc, _TCHAR* argv[])
 	double alpha = angle2d(z_gn, x_gn, z_gs, x_gs);
 
 	// Beta angles
-	double beta_0 = angle2d(z_gn, x_gn, z_gd - w_d/2 * sin(phi_d), x_gd + w_d / 2 * cos(phi_d));	// Wavelength on left edge of detector
+	double beta_0 = angle2d(z_gn, x_gn, z_gd - w_d / 2.0 * sin(phi_d), x_gd + w_d / 2.0 * cos(phi_d));	// Wavelength on left edge of detector
 	double beta_1 = angle2d(z_gn, x_gn, z_gd, x_gd);	// wavelength in center of detector
-	double beta_2 = angle2d(z_gn, x_gn, z_gd + w_d / 2 * sin(phi_d), x_gd - w_d / 2 * cos(phi_d));	// wavelength on right edge of detector
+	double beta_2 = angle2d(z_gn, x_gn, z_gd + w_d / 2.0 * sin(phi_d), x_gd - w_d / 2.0 * cos(phi_d));	// wavelength on right edge of detector
 
 	// Wavelength at center of detector
-	double lambda_0 = (d_g / ((double) m)) * (sin(alpha) + sin(beta_0));
+	double lambda_0 = (d_g / ((double)m)) * (sin(alpha) + sin(beta_0));
 	double lambda_1 = (d_g / ((double)m)) * (sin(alpha) + sin(beta_1));
 	double lambda_2 = (d_g / ((double)m)) * (sin(alpha) + sin(beta_2));
 
@@ -174,9 +174,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	double x_v_plus = -(r_s / 2.0) * x_gs_plus / sqrt(z_gs_plus * z_gs_plus + x_gs_plus * x_gs_plus);
 	double z_v_minus = -(r_s / 2.0) * z_gs_minus / sqrt(z_gs_minus * z_gs_minus + x_gs_minus * x_gs_minus);
 	double x_v_minus = -(r_s / 2.0) * x_gs_minus / sqrt(z_gs_minus * z_gs_minus + x_gs_minus * x_gs_minus);
-	
 
-	
+
+
 
 	// Add wavelengths into zemax
 	TheSystem->SystemData->Aperture->ApertureValue = h_s;
@@ -212,7 +212,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// Open the lens data editor
 	ILensDataEditorPtr lde = TheSystem->LDE;
-	
+
 
 	// Add a dummy surface to place the stop in the correct location
 	ILDERowPtr dum_row = lde->GetSurfaceAt(1);
@@ -228,7 +228,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	s_surf->RadiusOfRotation = r_s;		// Radius of rotation of the toroid is equal to the radius of the feed optic
 	ISurfaceApertureTypePtr s_apType = s_row->ApertureData->CreateApertureTypeSettings(SurfaceApertureTypes_RectangularAperture);
 	ISurfaceApertureRectangularPtr rect = s_apType->Get_S_RectangularAperture();
-	rect->XHalfWidth =  r_s;		// x half width equal to radius of feed optic
+	rect->XHalfWidth = r_s;		// x half width equal to radius of feed optic
 	rect->YHalfWidth = h_s; // y half width equal to double the height of the detector
 	s_row->ApertureData->ChangeApertureTypeSettings(s_apType);
 	s_row->TypeData->IsStop = true;
@@ -255,12 +255,12 @@ int _tmain(int argc, _TCHAR* argv[])
 	g_row->Radius = R_g;
 	g_row->Comment = _bstr_t::_bstr_t("GRATING");
 	g_row->TypeData->SurfaceCannotBeHyperhemispheric = true;
-	move_polar(lde,g_row,  -RR, phi_g - M_PI);
+	move_polar(lde, g_row, -RR, phi_g - M_PI);
 	rot_z(lde, lde->GetSurfaceAt(lde->NumberOfSurfaces - 4), M_PI / 2);
 
 
 	// Create detector
-	ILDERowPtr d_row = lde->GetSurfaceAt(lde->NumberOfSurfaces-1);
+	ILDERowPtr d_row = lde->GetSurfaceAt(lde->NumberOfSurfaces - 1);
 	d_row->Comment = _bstr_t::_bstr_t("DETECTOR");
 	d_row->SemiDiameter = w_d / 2;
 	ILDERowPtr cb1_row = lde->InsertNewSurfaceAt(lde->NumberOfSurfaces - 1);	// create first coordinate break at same index as input surface
@@ -274,36 +274,60 @@ int _tmain(int argc, _TCHAR* argv[])
 	// Open 3D layout
 	IA_Ptr draw = TheSystem->Analyses->New_Analysis_SettingsFirst(AnalysisIDM_Draw3D);
 	IAS_Ptr dSet = draw->GetSettings();
-	
+
 	// Create spot diagram
-	int ray_density = 10;
-	int field_density = 3;
+	int ray_density = 5;
+	int field_density = 5;
+	long rayNumber, errorCode, vignetteCode;
+	double X, Y, Z, L, M, N, l2, m2, n2, opd, intensity;
+	ofstream dat_file("rays/rays.dat", ios::out | ios::binary);
+	ofstream meta_file("rays/meta.dat", ios::out | ios::binary);
+	vector<int> k_dat;
+	vector<double> lambda_dat, hx_dat, hy_dat, px_dat, py_dat, x_dat, y_dat;
 	IBatchRayTracePtr rt = TheSystem->Tools->OpenBatchRayTrace();
 	ISystemToolPtr tool = TheSystem->Tools->CurrentTool;
-	IRayTraceNormUnpolDataPtr rt_dat = rt->CreateNormUnpol(1e5,RaysType_Real, lde->NumberOfSurfaces - 1);
-	for (double hx = -1.0; hx <= 1.0; hx += 2.0 / (field_density-1)) {
-		for (double hy = -1.0; hy <= 1.0; hy += 2.0 / (field_density - 1)) {
-			for (double px = -1.0; px <= 1.0; px += 2.0 / (ray_density - 1)) {
-				for (double py = -1.0; py <= 1.0; py += 2.0 / (ray_density - 1)) {
-					rt_dat->AddRay(1, hx, hy, px, py, OPDMode_None);
+	IRayTraceNormUnpolDataPtr rt_dat = rt->CreateNormUnpol(1e5, RaysType_Real, lde->NumberOfSurfaces - 1);
+	for (int k = 1; k <= TheSystem->SystemData->Wavelengths->NumberOfWavelengths; k++) {
+		for (double hx = -1.0; hx <= 1.0; hx += 2.0 / (field_density - 1)) {
+			for (double hy = -1.0; hy <= 1.0; hy += 2.0 / (field_density - 1)) {
+				for (double px = -1.0; px <= 1.0; px += 2.0 / (ray_density - 1)) {
+					for (double py = -1.0; py <= 1.0; py += 2.0 / (ray_density - 1)) {
+						rt_dat->AddRay(k, hx, hy, px, py, OPDMode_None);
+						k_dat.push_back(k);
+						lambda_dat.push_back(TheSystem->SystemData->Wavelengths->GetWavelength(k)->Wavelength);
+						hx_dat.push_back(hx);
+						hy_dat.push_back(hy);
+						px_dat.push_back(px);
+						py_dat.push_back(py);
+					}
 				}
 			}
 		}
-	}
-	long rayNumber, errorCode, vignetteCode;
-	double X, Y, Z, L, M, N , l2, m2, n2, opd, intensity;
+		double lam = TheSystem->SystemData->Wavelengths->GetWavelength(k)->Wavelength;
+		meta_file.write((char*)&lam, sizeof(double));
+	}	
+	int nr = rt_dat->NumberOfRays;
 	tool->RunAndWaitForCompletion();
 	rt_dat->StartReadingResults();
-	for(int i = 0; i < rt_dat->NumberOfRays; i++){
+	for(int i = 0; i < nr; i++){	// Read rays and save to binary file
 		rt_dat->ReadNextResult(&rayNumber, &errorCode, &vignetteCode, &X, &Y, &Z, &L, &M, &N, &l2, &m2, &n2, &opd, &intensity);
-		cout << X << " " << Y << " " << Z << endl;
+		dat_file.write((char*)&lambda_dat[i], sizeof(double));
+		dat_file.write((char*)&hx_dat[i], sizeof(double));
+		dat_file.write((char*)&hy_dat[i], sizeof(double));
+		dat_file.write((char*)&px_dat[i], sizeof(double));
+		dat_file.write((char*)&py_dat[i], sizeof(double));
+		dat_file.write((char*)&X, sizeof(double));
+		dat_file.write((char*)&Y, sizeof(double));
 	}
+	meta_file.write((char*)&nr, sizeof(int));
+	dat_file.close();
+	meta_file.close();
 
 	char buf[1000];
 	_getcwd(buf, 1000);
 	string cp(buf);
-	//string zp = cp + "/../zemax/suvis_design.zmx";
-	string zp = cp + "/../../../zemax/suvis_design.zmx";
+	string zp = cp + "/../zemax/suvis_design.zmx";
+	//string zp = cp + "/../../../zemax/suvis_design.zmx";
 	replace(zp.begin(), zp.end(), '\\', '/');
 	TheSystem->SaveAs(_bstr_t::_bstr_t(zp.c_str()));
 	cout << zp << endl;

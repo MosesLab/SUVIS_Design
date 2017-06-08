@@ -1,4 +1,4 @@
 ﻿  CppStandaloneApplication.cpp
-e:\users\byrdie\school\research\suvis_design\c++\cppstandaloneapplication\cppstandaloneapplication\cppstandaloneapplication.cpp(283): warning C4244: 'argument': conversion from 'double' to 'long', possible loss of data
-  CppStandaloneApplication.vcxproj -> E:\Users\byrdie\School\Research\SUVIS_Design\c++\CppStandaloneApplication\Debug\CppStandaloneApplication.exe
-  CppStandaloneApplication.vcxproj -> E:\Users\byrdie\School\Research\SUVIS_Design\c++\CppStandaloneApplication\Debug\CppStandaloneApplication.pdb (Partial PDB)
+d:\users\krg\roy smart\school\research\suvis_design\c++\cppstandaloneapplication\cppstandaloneapplication\cppstandaloneapplication.cpp(289): warning C4244: 'argument': conversion from 'double' to 'long', possible loss of data
+  CppStandaloneApplication.vcxproj -> D:\Users\krg\Roy Smart\School\Research\SUVIS_Design\c++\CppStandaloneApplication\Debug\CppStandaloneApplication.exe
+  CppStandaloneApplication.vcxproj -> D:\Users\krg\Roy Smart\School\Research\SUVIS_Design\c++\CppStandaloneApplication\Debug\CppStandaloneApplication.pdb (Partial PDB)
