@@ -84,8 +84,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	// Open a new Zemax file
 	TheSystem->New(false);
 
-	int ray_density = 200;
-
 	// Design using a custom grating
 	double offset = 4.1 * M_PI / 180.0; // Offset detector from normal
 	double phi_s = offset + 30 * M_PI / 180.0; // (rad)angular position of slit     on Rowland Circle
@@ -224,10 +222,6 @@ int _tmain(int argc, _TCHAR* argv[])
 
 
 	// Create the feed optic
-	//ILDERowPtr so_row = lde->InsertNewSurfaceAt(lde->NumberOfSurfaces - 1);	// Create rotation offset surface
-	//so_row->ChangeType(so_row->GetSurfaceTypeSettings(SurfaceType_CoordinateBreak));	// change type to coordinate break
-	//so_row->Thickness = r_s / 2;
-	//so_row->Comment = _bstr_t::_bstr_t("FEED OPTIC rotation offset");
 	ILDERowPtr s_row = lde->InsertNewSurfaceAt(lde->NumberOfSurfaces - 1);	// Insert the surface before the image surface
 	s_row->ChangeType(s_row->GetSurfaceTypeSettings(SurfaceType_Toroidal));		// Change the surface type to toroidal
 	ISurfaceToroidalPtr s_surf = s_row->SurfaceData;
@@ -240,14 +234,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	s_row->TypeData->IsStop = true;
 	s_row->Material = _bstr_t::_bstr_t("MIRROR");
 	s_row->Comment = _bstr_t::_bstr_t("FEED OPTIC");
-	// move_polar(lde, s_row, RR - r_s, phi_s);
-	//ILDERowPtr si_row = lde->InsertNewSurfaceAt(lde->NumberOfSurfaces - 1);	// Create rotation offset surface
-	//si_row->ChangeType(si_row->GetSurfaceTypeSettings(SurfaceType_CoordinateBreak));	// change type to coordinate break
-	//ISolveDataPtr si_solve = si_row->ThicknessCell->CreateSolveType(SolveType_SurfacePickup);
-	//si_solve->Get_S_SurfacePickup()->Surface = so_row->SurfaceNumber;
-	//si_solve->Get_S_SurfacePickup()->ScaleFactor = -1;
-	//si_row->ThicknessCell->SetSolveData(si_solve);
-	//si_row->Comment = _bstr_t::_bstr_t("FEED OPTIC inverse rotation offset");
 
 	// Perform a coordinate transfor to the center of the Rowland circle, with the entrance slit on
 	// the same x-coordinate as the slit
@@ -288,32 +274,36 @@ int _tmain(int argc, _TCHAR* argv[])
 	// Open 3D layout
 	IA_Ptr draw = TheSystem->Analyses->New_Analysis_SettingsFirst(AnalysisIDM_Draw3D);
 	IAS_Ptr dSet = draw->GetSettings();
-
-	//TheSystem->Analyses->New_StandardSpot();
-
-	//IA_Ptr ray = TheSystem->Analyses->New_RayTrace();
-	//ray->WaitForCompletion();
-	//IAS_RayTracePtr ray_s = ray->GetSettings();
-	//ray_s->Hx = 0.0;
-	//ray_s->Hy = 0.0;
-	//ray_s->Px = 0.0;
-	//ray_s->Py = 1.0;
-	//ray_s->Type = RayTraceType_DirectionCosines;
-	//ray_s->UseGlobal = false;
-	//ray->ApplyAndWaitForCompletion();
-	//IAR_Ptr ray_r = ray->GetResults();
-	//ray_r->GetTextFile(_bstr_t::_bstr_t("D:/Users/krg/Roy Smart/School/Research/SUVIS_Design/test.txt"));
-	//
-	//
-	//vector<vector<string>> ray_dat = parse_ray_file("D:/Users/krg/Roy Smart/School/Research/SUVIS_Design/test.txt");
-	//print_ray_file(ray_dat);
-
+	
+	// Create spot diagram
+	int ray_density = 10;
+	int field_density = 3;
 	IBatchRayTracePtr rt = TheSystem->Tools->OpenBatchRayTrace();
+	ISystemToolPtr tool = TheSystem->Tools->CurrentTool;
+	IRayTraceNormUnpolDataPtr rt_dat = rt->CreateNormUnpol(1e5,RaysType_Real, lde->NumberOfSurfaces - 1);
+	for (double hx = -1.0; hx <= 1.0; hx += 2.0 / (field_density-1)) {
+		for (double hy = -1.0; hy <= 1.0; hy += 2.0 / (field_density - 1)) {
+			for (double px = -1.0; px <= 1.0; px += 2.0 / (ray_density - 1)) {
+				for (double py = -1.0; py <= 1.0; py += 2.0 / (ray_density - 1)) {
+					rt_dat->AddRay(1, hx, hy, px, py, OPDMode_None);
+				}
+			}
+		}
+	}
+	long rayNumber, errorCode, vignetteCode;
+	double X, Y, Z, L, M, N , l2, m2, n2, opd, intensity;
+	tool->RunAndWaitForCompletion();
+	rt_dat->StartReadingResults();
+	for(int i = 0; i < rt_dat->NumberOfRays; i++){
+		rt_dat->ReadNextResult(&rayNumber, &errorCode, &vignetteCode, &X, &Y, &Z, &L, &M, &N, &l2, &m2, &n2, &opd, &intensity);
+		cout << X << " " << Y << " " << Z << endl;
+	}
 
 	char buf[1000];
 	_getcwd(buf, 1000);
 	string cp(buf);
-	string zp = cp + "/../zemax/suvis_design.zmx";
+	//string zp = cp + "/../zemax/suvis_design.zmx";
+	string zp = cp + "/../../../zemax/suvis_design.zmx";
 	replace(zp.begin(), zp.end(), '\\', '/');
 	TheSystem->SaveAs(_bstr_t::_bstr_t(zp.c_str()));
 	cout << zp << endl;
@@ -399,51 +389,9 @@ void rot_z(ILensDataEditorPtr lde, ILDERowPtr row, double phi) {
 
 }
 
-vector<vector<string>> parse_ray_file(string file) {
-	
-	vector<vector<string>> tok_mat;
-	
-	// Copy UTF16 file into standard string
-	std::stringstream ss;
-	std::ifstream fin(file);
-	ss << fin.rdbuf(); // dump file contents into a stringstream
-	std::string const &s = ss.str();
-	std::wstring ws;
-	ws.resize(s.size() / sizeof(wchar_t));
-	std::memcpy(&ws[0], s.c_str(), s.size()); // copy data into wstring
 
-	string ray_str = ws2s(ws);
-	istringstream f_stream(ray_str);
 
-	string ray_line;
-	while (getline(f_stream, ray_line)) {
-		istringstream l_stream(ray_line);
-		vector<string> tok_line;
-		string token;
-		while (getline(l_stream, token, '\t')) {
-			tok_line.push_back(token);
-		}
-		tok_mat.push_back(tok_line);
-	}
 
-	return tok_mat;
-}
-
-void print_ray_file(vector<vector<string>> mat) {
-	for (unsigned int i = 0; i < mat.size(); i++) {
-		vector<string> row = mat[i];
-		for (unsigned int j = 0; j < row.size(); j++) {
-			cout << row[j] << "_";
-		}
-		cout << endl;
-	}
-}
-
-string ws2s(wstring wstr)
-{
-	string str(wstr.begin(), wstr.end());
-	return str;
-}
 
 void handleError(std::string msg)
 {
