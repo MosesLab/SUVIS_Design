@@ -5,7 +5,7 @@ ray_file = fopen('rays/rays.dat');
 wav_0 = fread(meta_file,1,'double');
 wav_1 = fread(meta_file,1,'double');
 wav_2 = fread(meta_file,1,'double');
-num_rays = fread(meta_file,1,'int32');
+num_rays = fread(meta_file,1,'int32')
 
 % Read in ray data
 rays = fread(ray_file, [7, num_rays], 'double');
@@ -23,7 +23,11 @@ i_2 = find(wav == wav_2);
 x_0 = x(i_0);
 x_1 = x(i_1);
 x_2 = x(i_2);
-y_c = y(i_c);
+y_0 = y(i_0);
+y_1 = y(i_1);
+y_2 = y(i_2);
 
 
-scatter(x_c,y_c,5,'filled')
+pt_sz = 10;
+field_color = hx(i_0);
+scatter(x_0,y_0,pt_sz, hx(i_0),'filled')

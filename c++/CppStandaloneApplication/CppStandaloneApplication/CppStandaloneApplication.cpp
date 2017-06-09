@@ -110,6 +110,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	int N_d = stoi(argv[9]); ; // Number of detector pixels in the dispersion direction
 	int m =  stoi(argv[10]); ; // spectral order
 	double r_s = _tcstod(argv[11], NULL);			// (mm) Radius of feed optic
+	int field_density = stoi(argv[12]);
+	int ray_density = stoi(argv[13]);
 
 
 	double h_d = N_d / 2.0 * d_d;	// Full height of the detector
@@ -276,8 +278,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	IAS_Ptr dSet = draw->GetSettings();
 
 	// Create spot diagram
-	int ray_density = 5;
-	int field_density = 5;
 	long rayNumber, errorCode, vignetteCode;
 	double X, Y, Z, L, M, N, l2, m2, n2, opd, intensity;
 	ofstream dat_file("rays/rays.dat", ios::out | ios::binary);
@@ -287,11 +287,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	IBatchRayTracePtr rt = TheSystem->Tools->OpenBatchRayTrace();
 	ISystemToolPtr tool = TheSystem->Tools->CurrentTool;
 	IRayTraceNormUnpolDataPtr rt_dat = rt->CreateNormUnpol(1e5, RaysType_Real, lde->NumberOfSurfaces - 1);
-	for (int k = 1; k <= TheSystem->SystemData->Wavelengths->NumberOfWavelengths; k++) {
-		for (double hx = -1.0; hx <= 1.0; hx += 2.0 / (field_density - 1)) {
-			for (double hy = -1.0; hy <= 1.0; hy += 2.0 / (field_density - 1)) {
-				for (double px = -1.0; px <= 1.0; px += 2.0 / (ray_density - 1)) {
-					for (double py = -1.0; py <= 1.0; py += 2.0 / (ray_density - 1)) {
+	for (int k = 1; k <= TheSystem->SystemData->Wavelengths->NumberOfWavelengths; k++) {	// Integrate over the sun and pupil
+		for (double hx = -1.0; hx <= 1.0; hx += 2.0 / (field_density - 1.0)) {
+			for (double hy = -1.0; hy <= 1.0; hy += 2.0 / (field_density - 1.0)) {
+				for (double px = -1.0; px <= 1.0; px += 2.0 / (ray_density - 1.0)) {
+					for (double py = -1.0; py <= 1.0; py += 2.0 / (ray_density - 1.0)) {
 						rt_dat->AddRay(k, hx, hy, px, py, OPDMode_None);
 						k_dat.push_back(k);
 						lambda_dat.push_back(TheSystem->SystemData->Wavelengths->GetWavelength(k)->Wavelength);
