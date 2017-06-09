@@ -194,16 +194,29 @@ int _tmain(int argc, _TCHAR* argv[])
 	IFieldPtr f2 = TheSystem->SystemData->Fields->AddField(-0.25, 0.0, 1.0);
 	IFieldPtr f3 = TheSystem->SystemData->Fields->AddField(0.0, 0.25, 1.0);
 	IFieldPtr f4 = TheSystem->SystemData->Fields->AddField(0.0, -0.25, 1.0);
+	IFieldPtr f5 = TheSystem->SystemData->Fields->AddField(0.25, 0.25, 1.0);
+	IFieldPtr f6 = TheSystem->SystemData->Fields->AddField(-0.25, 0.25, 1.0);
+	IFieldPtr f7 = TheSystem->SystemData->Fields->AddField(-0.25, -0.25, 1.0);
+	IFieldPtr f8 = TheSystem->SystemData->Fields->AddField(0.25, -0.25, 1.0);
 	f0->VDX = vdx;
 	f1->VDX = vdx;
 	f2->VDX = vdx;
 	f3->VDX = vdx;
 	f4->VDX = vdx;
+	f5->VDX = vdx;
+	f6->VDX = vdx;
+	f7->VDX = vdx;
+	f8->VDX = vdx;
 	f0->VCX = vcx;
 	f1->VCX = vcx;
 	f2->VCX = vcx;
 	f3->VCX = vcx;
 	f4->VCX = vcx;
+	f5->VCX = vcx;
+	f6->VCX = vcx;
+	f7->VCX = vcx;
+	f8->VCX = vcx;
+	TheSystem->SystemData->Fields->Normalization = FieldNormalizationType_Rectangular;
 
 	// Enable ray aiming to determine the correct stop location
 	//TheSystem->SystemData->RayAiming->RayAiming = RayAimingMethod_Real;
@@ -311,13 +324,16 @@ int _tmain(int argc, _TCHAR* argv[])
 	rt_dat->StartReadingResults();
 	for(int i = 0; i < nr; i++){	// Read rays and save to binary file
 		rt_dat->ReadNextResult(&rayNumber, &errorCode, &vignetteCode, &X, &Y, &Z, &L, &M, &N, &l2, &m2, &n2, &opd, &intensity);
-		dat_file.write((char*)&lambda_dat[i], sizeof(double));
-		dat_file.write((char*)&hx_dat[i], sizeof(double));
-		dat_file.write((char*)&hy_dat[i], sizeof(double));
-		dat_file.write((char*)&px_dat[i], sizeof(double));
-		dat_file.write((char*)&py_dat[i], sizeof(double));
-		dat_file.write((char*)&X, sizeof(double));
-		dat_file.write((char*)&Y, sizeof(double));
+		if (!vignetteCode) {	// Check the vignette code to make sure that the ray made it through the system
+			dat_file.write((char*)&lambda_dat[i], sizeof(double));
+			dat_file.write((char*)&hx_dat[i], sizeof(double));
+			dat_file.write((char*)&hy_dat[i], sizeof(double));
+			dat_file.write((char*)&px_dat[i], sizeof(double));
+			dat_file.write((char*)&py_dat[i], sizeof(double));
+			dat_file.write((char*)&X, sizeof(double));
+			dat_file.write((char*)&Y, sizeof(double));
+		}
+
 	}
 	meta_file.write((char*)&nr, sizeof(int));
 	dat_file.close();

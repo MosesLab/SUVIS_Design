@@ -7,8 +7,13 @@ wav_1 = fread(meta_file,1,'double');
 wav_2 = fread(meta_file,1,'double');
 num_rays = fread(meta_file,1,'int32')
 
+
 % Read in ray data
 rays = fread(ray_file, [7, num_rays], 'double');
+
+fclose(meta_file);
+fclose(ray_file);
+
 wav = rays(1,:);
 hx = rays(2,:);
 hy = rays(3,:);
