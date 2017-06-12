@@ -37,6 +37,5 @@ pt_sz = 30;
 field_color = hx(i_0);
 scatter(x_0,y_0,pt_sz, hx(i_0),'filled')
 
-rms(x_0)
-
+sqrt(mean(x(hx==-1 & hy==-1 & lam == wav_0) .* x(hx==-1 & hy==-1 & lam == wav_0))) * 2
 %scatter(x(hx==-1 & hy==-1 & wav == wav_0),y(hx==-1 & hy==-1 & wav == wav_0),pt_sz,px(hx==-1 & hy==-1 & wav == wav_0),'filled')

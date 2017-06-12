@@ -1,8 +1,7 @@
 % Design using a custom grating
 offset = 4.1*pi/180; % Offset detector from normal
-%phi_s =  offset + 33*pi/180; % (rad) angular position of slit     on Rowland Circle
-phi_s =  offset + 22*pi/180;
-%phi_s =  offset + 10*pi/180;
+phiS_max =  offset + 33*pi/180; % (rad) angular position of slit     on Rowland Circle
+phiS_min =  offset + 10*pi/180;
 phi_g = pi-offset; % (rad) angular position of grating  on Rowland Circle
 phi_d = offset; % (rad) angular position of detector on Rowland Circle
 R_g   =   1500.0; % (mm)  grating radius
@@ -15,18 +14,37 @@ m     =      1; % spectral order
 r_s = 3.0;        % (mm) radius of feed optic
 % CCK 2017-May-30 updated after correcting an error in rowland.m
 
-field_den = 5;
-ray_den = 31;
+% Raytrace densities
+field_den = 3;  % Number of field angles to sample per axis
+ray_den = 5;   % Number of rays in pupil per axis
+tot_rays = field_den^2 * ray_den^2;
 
-% Construct call to Zemax
-path = "..\c++\CppStandaloneApplication\Debug\CppStandaloneApplication ";
-args = strcat(num2str(phi_s), " ", num2str(phi_g), " ", num2str(phi_d), " ", num2str(R_g), " ", ...
-    num2str(w_g), " ", num2str(d_s), " ", num2str(d_g), " ", num2str(d_d), " ", num2str(N_d), ...
-    " ", num2str(m), " ", num2str(r_s)," ", num2str(field_den), " ", num2str(ray_den));
+phiS_resolution = 5;  % Number of slit positions
+d_phiS = (phiS_max - phiS_min) / (phiS_resolution - 1);     % Angle between each slit position
 
-% Call zemax c++ code with the above arguments
-system(char(strcat(path, args)));
+rays_center = [];      % Array to store results of raytrace for each slit position
+rays_left = [];
+rays_right = [];
 
-% Construct spot diagram
-zemax_spot
+% Loop over given slit positions
+i = 1;
+for phi_s = phiS_min : d_phiS : phiS_max
+    
+    fprintf('Raytrace for position %i of %i\n', i, phiS_resolution);
+    
+    % construct zemax model for this slit position
+    build_zemax_model(phi_s, phi_g, phi_d, R_g, w_g, d_s, d_g, d_d, N_d, m, r_s, field_den, ray_den);
+    
+    % Read rays for this slit position into Matlab memory
+    [left, center, right] = read_zemax_raytrace();
+    
+    % Store results in cube
+    rays_center = cat(2, rays_center, center);
+    rays_left = cat(2, rays_left, center);
+    rays_right = cat(2, rays_right, center);
+    
+    i = i + 1;
+    
+end
 
+plot_spot(rays_left, rays_center, rays_right);

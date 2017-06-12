@@ -326,16 +326,17 @@ int _tmain(int argc, _TCHAR* argv[])
 		errorCode = 0;
 		vignetteCode = 0;
 		rt_dat->ReadNextResult(&rayNumber, &errorCode, &vignetteCode, &X, &Y, &Z, &L, &M, &N, &l2, &m2, &n2, &opd, &intensity);
-		if (vignetteCode == 0 && errorCode == 0) {	// Check the vignette code to make sure that the ray made it through the system
-			dat_file.write((char*)&lambda_dat[i], sizeof(double));
-			dat_file.write((char*)&hx_dat[i], sizeof(double));
-			dat_file.write((char*)&hy_dat[i], sizeof(double));
-			dat_file.write((char*)&px_dat[i], sizeof(double));
-			dat_file.write((char*)&py_dat[i], sizeof(double));
-			dat_file.write((char*)&X, sizeof(double));
-			dat_file.write((char*)&Y, sizeof(double));
-		}
 
+		double vd = vignetteCode;
+
+		dat_file.write((char*)&lambda_dat[i], sizeof(double));
+		dat_file.write((char*)&hx_dat[i], sizeof(double));
+		dat_file.write((char*)&hy_dat[i], sizeof(double));
+		dat_file.write((char*)&px_dat[i], sizeof(double));
+		dat_file.write((char*)&py_dat[i], sizeof(double));
+		dat_file.write((char*)&X, sizeof(double));
+		dat_file.write((char*)&Y, sizeof(double));
+		dat_file.write((char*)&vd, sizeof(double));
 	}
 	meta_file.write((char*)&nr, sizeof(int));
 	dat_file.close();
@@ -348,7 +349,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	//string zp = cp + "/../../../zemax/suvis_design.zmx";
 	replace(zp.begin(), zp.end(), '\\', '/');
 	TheSystem->SaveAs(_bstr_t::_bstr_t(zp.c_str()));
-	cout << zp << endl;
 	
 
 	TheSystem->Close(false);
