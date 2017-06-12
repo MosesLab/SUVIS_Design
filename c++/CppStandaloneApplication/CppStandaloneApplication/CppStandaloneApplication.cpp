@@ -323,8 +323,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	tool->RunAndWaitForCompletion();
 	rt_dat->StartReadingResults();
 	for(int i = 0; i < nr; i++){	// Read rays and save to binary file
+		errorCode = 0;
+		vignetteCode = 0;
 		rt_dat->ReadNextResult(&rayNumber, &errorCode, &vignetteCode, &X, &Y, &Z, &L, &M, &N, &l2, &m2, &n2, &opd, &intensity);
-		if (!vignetteCode) {	// Check the vignette code to make sure that the ray made it through the system
+		if (vignetteCode == 0 && errorCode == 0) {	// Check the vignette code to make sure that the ray made it through the system
 			dat_file.write((char*)&lambda_dat[i], sizeof(double));
 			dat_file.write((char*)&hx_dat[i], sizeof(double));
 			dat_file.write((char*)&hy_dat[i], sizeof(double));
