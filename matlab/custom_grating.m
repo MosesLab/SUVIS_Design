@@ -38,7 +38,7 @@ xlabel('wavelength (nm)')
 ylabel('effective resolving power')
 print('custom_grating_resolution_s1.pdf','-dpdfwrite')
 
-phi_s = 40*pi/180 % increase to get up to 2000 Å
+phi_s = 40*pi/180; % increase to get up to 2000 Å
 figure(4)
 [lambdas, deltas] = rowland(phi_s, phi_g, phi_d, R_g, w_g, d_s, d_g, d_d, N_d, m);
 plot([850,-850,-850,850],[-30,-30,420,420],'k:')

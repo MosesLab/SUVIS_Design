@@ -86,17 +86,20 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// Design using a custom grating
 	//double offset = 4.1 * M_PI / 180.0; // Offset detector from normal
-	//double phi_s = offset + 30 * M_PI / 180.0; // (rad)angular position of slit     on Rowland Circle
+	//double phi_s = offset + 10.0 * M_PI / 180.0; // (rad)angular position of slit     on Rowland Circle
 	//double phi_g = M_PI - offset; // (rad)angular position of grating  on Rowland Circle
 	//double phi_d = offset; // (rad)angular position of detector on Rowland Circle
-	//double R_g = 1000; // (mm)grating radius
+	//double R_g = 1500; // (mm)grating radius
 	//double w_g = 100; // grating diameter
 	//double d_s = 15e-3; // (mm)width of slit
 	//double d_g = 1.0 / 2160.0; // (mm)grating groove period
 	//double d_d = 15e-3; // (mm)detector pixel spacing
 	//int N_d = 2048; // Number of detector pixels in the dispersion direction
 	//int m = 1; // spectral order
-	//double r_s = 3;		// (mm) Radius of feed optic
+	//double r_s = 3.0;		// (mm) Radius of feed optic
+	//int field_density = 3;
+	//int ray_density = 3;
+
 
 
 	double phi_s = _tcstod(argv[1], NULL);	 // (rad)angular position of slit     on Rowland Circle
@@ -115,9 +118,9 @@ int _tmain(int argc, _TCHAR* argv[])
 
 
 	double h_d = N_d / 2.0 * d_d;	// Full height of the detector
-	double h_s = h_d * 2.0; // Height of aperture
+	double h_s = h_d; // Height of aperture
 
-	double w_d = (N_d)* d_d;
+	double w_d = ( (double) N_d - 1)* d_d;
 
 	double RR = R_g / 2.0;	// Radius of rowland circle
 
@@ -145,19 +148,25 @@ int _tmain(int argc, _TCHAR* argv[])
 	double alpha = angle2d(z_gn, x_gn, z_gs, x_gs);
 
 	// Beta angles
-	double beta_0 = angle2d(z_gn, x_gn, z_gd - w_d / 2.0 * sin(phi_d), x_gd + w_d / 2.0 * cos(phi_d));	// Wavelength on left edge of detector
-	double beta_1 = angle2d(z_gn, x_gn, z_gd, x_gd);	// wavelength in center of detector
-	double beta_2 = angle2d(z_gn, x_gn, z_gd + w_d / 2.0 * sin(phi_d), x_gd - w_d / 2.0 * cos(phi_d));	// wavelength on right edge of detector
+	double z_p_0 = z_d - w_d / 2.0 * sin(phi_d);
+	double x_p_0 = x_d + w_d / 2.0 * cos(phi_d);
+	double z_p_2 = z_d + w_d / 2.0 * sin(phi_d);
+	double x_p_2 = x_d - w_d / 2.0 * cos(phi_d);
+	double beta_0 = angle2d(z_gn, x_gn, z_p_0 - z_g, x_p_0 - x_g);	// Wavelength on left edge of detector
+	double beta_1 = angle2d(z_gn, x_gn, z_d - z_g, x_d - x_g);	// wavelength in center of detector
+	double beta_2 = angle2d(z_gn, x_gn, z_p_2 - z_g, x_p_2 - x_g);	// wavelength on right edge of detector
+	//cout << beta_0 << " " << beta_1 << " " << beta_2 << endl;
 
 	// Wavelength at center of detector
 	double lambda_0 = (d_g / ((double)m)) * (sin(alpha) + sin(beta_0));
 	double lambda_1 = (d_g / ((double)m)) * (sin(alpha) + sin(beta_1));
 	double lambda_2 = (d_g / ((double)m)) * (sin(alpha) + sin(beta_2));
+	//cout << lambda_0 << " " << lambda_1 << " " << lambda_2 << endl;
 
 	// Calculate vectors from center of grating to edge of grating
 	// in the plane of the Rowland circle
-	double z_g_plus = -w_g * x_gn / 2;
-	double x_g_plus = -w_g * z_gn / 2;
+	double z_g_plus = -w_g * x_gn / 2.0;
+	double x_g_plus = -w_g * z_gn / 2.0;
 	double z_g_minus = -z_g_plus;
 	double x_g_minus = -x_g_plus;
 
@@ -216,7 +225,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	f6->VCX = vcx;
 	f7->VCX = vcx;
 	f8->VCX = vcx;
-	TheSystem->SystemData->Fields->Normalization = FieldNormalizationType_Rectangular;
+	TheSystem->SystemData->Fields->Normalization = FieldNormalizationType_Radial;
 
 	// Enable ray aiming to determine the correct stop location
 	//TheSystem->SystemData->RayAiming->RayAiming = RayAimingMethod_Real;

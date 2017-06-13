@@ -54,6 +54,6 @@ mkdir(dir);
 
 plot_spot(rays_left, rays_center, rays_right, phiS, dir);
 
-plot_size_vs_wavlen( rays_left, rays_center, rays_right, phiS, dir )
+%plot_size_vs_wavlen( rays_left, rays_center, rays_right, phiS, dir )
 
 

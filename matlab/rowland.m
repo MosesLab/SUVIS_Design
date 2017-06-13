@@ -18,8 +18,8 @@ function [lambdas, deltas] = rowland(phi_s, phi_g, phi_d, R_g, w_g, d_s, d_g, d_
 % TO BE ALL THE SAME.
 % CCK 2017-May-30 corrected serious error in calculation of betas (thanks to Roy).
 
-RR = R_g/2 % radius of Rowland circle
-N_g = w_g/d_g % number of illuminated rulings
+RR = R_g/2; % radius of Rowland circle
+N_g = w_g/d_g; % number of illuminated rulings
 
 % Cartesian coordinates of grating, slit, and detector (centers).
 phi_g;
@@ -53,11 +53,9 @@ y_p = y_d + s .* cos(phi_d); % pixel y array
 
 % Array of beta angles for all of the pixels
 betas = angle2d( x_gn, y_gn, x_p - x_g, y_p - y_g );
-% beta = angle2d(x_gn, y_gn, x_gd, y_gd)
 
 % Array of wavelengths, using the grating equation
 lambdas = (d_g ./ m) .* ( sin(alpha) + sin(betas) );
-%lambda = (d_g ./ m) .* ( sin(alpha) + sin(beta) )
 
 % Array of delta lambda, using RSS of diffraction limit, pixels, and slit width.
 % There is no aberration in this calculation!!
