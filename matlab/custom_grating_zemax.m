@@ -16,11 +16,12 @@ r_s = 3.0;        % (mm) radius of feed optic
 
 % Raytrace densities
 field_den = 3;  % Number of field angles to sample per axis
-ray_den = 5;   % Number of rays in pupil per axis
+ray_den = 3;   % Number of rays in pupil per axis
 tot_rays = field_den^2 * ray_den^2;
 
-phiS_resolution = 5;  % Number of slit positions
+phiS_resolution = 3;  % Number of slit positions
 d_phiS = (phiS_max - phiS_min) / (phiS_resolution - 1);     % Angle between each slit position
+phiS = phiS_min : d_phiS : phiS_max;
 
 rays_center = [];      % Array to store results of raytrace for each slit position
 rays_left = [];
@@ -28,7 +29,7 @@ rays_right = [];
 
 % Loop over given slit positions
 i = 1;
-for phi_s = phiS_min : d_phiS : phiS_max
+for phi_s = phiS
     
     fprintf('Raytrace for position %i of %i\n', i, phiS_resolution);
     
@@ -40,11 +41,19 @@ for phi_s = phiS_min : d_phiS : phiS_max
     
     % Store results in cube
     rays_center = cat(2, rays_center, center);
-    rays_left = cat(2, rays_left, center);
-    rays_right = cat(2, rays_right, center);
+    rays_left = cat(2, rays_left, left);
+    rays_right = cat(2, rays_right, right);
     
     i = i + 1;
     
 end
 
-plot_spot(rays_left, rays_center, rays_right);
+dir = '../output/';
+cmd_rmdir(dir);
+mkdir(dir);
+
+plot_spot(rays_left, rays_center, rays_right, phiS, dir);
+
+plot_size_vs_wavlen( rays_left, rays_center, rays_right, phiS, dir )
+
+
