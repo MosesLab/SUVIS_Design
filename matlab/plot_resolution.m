@@ -2,12 +2,20 @@ function [ ] = plot_resolution( left, center, right, phi_s, dir )
 
 % Create directory where output from this script will be stored
 plot_dir = strcat(dir, 'resolution/');
-mkdir(dir);
+mkdir(strcat(dir, plot_dir));
 
 % Extract parameters of each ray
 [lam_c, hx_c, hy_c, px_c, py_c, x_c, y_c, vig_c] = get_ray_data(center);
 [lam_l, hx_l, hy_l, px_l, py_l, x_l, y_l, vig_l] = get_ray_data(left);
 [lam_r, hx_r, hy_r, px_r, py_r, x_r, y_r, vig_r] = get_ray_data(right);
+
+x_l = x_l * 1e3;    % Convert detector position to microns
+x_c = x_c * 1e3;  
+x_r = x_r * 1e3;  
+
+lam_l = lam_l * 1e3;    % Convert wavelength to nm
+lam_c = lam_c * 1e3;  
+lam_r = lam_r * 1e3;  
 
 % subtract mean for accurate comparison
 % o_c = mean(x_c(:));
@@ -53,16 +61,31 @@ figure(7);
 hold off
 plot([wav_l', wav_c',wav_r'], [R_l',R_c', R_r']);
 hold on
+title('Effective Resolution vs. Wavelength');
+xlabel('wavelength (nm)');
+ylabel('Resolution');
+print(sprintf('%sresolution_vs_wavelength.pdf', plot_dir), '-dpdfwrite');
+print(sprintf('%sresolution_vs_wavelength.png', plot_dir), '-dpng');
 
 figure(8);
 hold off
 plot([wav_l', wav_c',wav_r'], [sigmaL_l',sigmaL_c', sigmaL_r']);
 hold on
+title('Spot Standard Deviation (wavelength units) vs. Wavelength');
+xlabel('wavelength (nm)');
+ylabel('standard deviation (nm) ');
+print(sprintf('%ssigmaL_vs_wavelength.pdf', plot_dir), '-dpdfwrite');
+print(sprintf('%ssigmaL_vs_wavelength.png', plot_dir), '-dpng');
 
 figure(9);
 hold off
 plot([wav_l', wav_c',wav_r'], [sigmaX_l',sigmaX_c', sigmaX_r']);
 hold on
+title('Spot Standard Deviation (detector units) vs. Wavelength');
+xlabel('wavelength (nm)');
+ylabel('standard deviation (microns) ');
+print(sprintf('%ssigmaX_vs_wavelength.pdf', plot_dir), '-dpdfwrite');
+print(sprintf('%ssigmaX_vs_wavelength.png', plot_dir), '-dpng');
 
 end
 
