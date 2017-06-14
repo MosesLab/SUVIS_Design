@@ -148,10 +148,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	double alpha = angle2d(z_gn, x_gn, z_gs, x_gs);
 
 	// Beta angles
-	double z_p_0 = z_d - w_d / 2.0 * sin(phi_d);
-	double x_p_0 = x_d + w_d / 2.0 * cos(phi_d);
-	double z_p_2 = z_d + w_d / 2.0 * sin(phi_d);
-	double x_p_2 = x_d - w_d / 2.0 * cos(phi_d);
+	double s_w = 0.9;
+	double z_p_0 = z_d - s_w * w_d / 2.0 * sin(phi_d);
+	double x_p_0 = x_d + s_w * w_d / 2.0 * cos(phi_d);
+	double z_p_2 = z_d + s_w * w_d / 2.0 * sin(phi_d);
+	double x_p_2 = x_d - s_w * w_d / 2.0 * cos(phi_d);
 	double beta_0 = angle2d(z_gn, x_gn, z_p_0 - z_g, x_p_0 - x_g);	// Wavelength on left edge of detector
 	double beta_1 = angle2d(z_gn, x_gn, z_d - z_g, x_d - x_g);	// wavelength in center of detector
 	double beta_2 = angle2d(z_gn, x_gn, z_p_2 - z_g, x_p_2 - x_g);	// wavelength on right edge of detector

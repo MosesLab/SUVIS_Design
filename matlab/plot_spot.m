@@ -32,6 +32,7 @@ min_y = mar * min(all_y(:));
 max_y = mar * max(all_y(:));
 
 pt_sz = 20; % Size of points in scatterplot
+figure(10);
 for i = 1:size(x_c,1)
     i_c = find(vig_c(i,:) == 0);
     hold off

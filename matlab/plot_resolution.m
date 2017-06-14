@@ -10,19 +10,19 @@ mkdir(dir);
 [lam_r, hx_r, hy_r, px_r, py_r, x_r, y_r, vig_r] = get_ray_data(right);
 
 % subtract mean for accurate comparison
-o_c = mean(x_c(:));
-o_l = mean(x_l(:));
-o_r = mean(x_r(:));
-x_c = x_c - o_c;
-x_l = x_l - o_l;
-x_r = x_r - o_r;
+% o_c = mean(x_c(:));
+% o_l = mean(x_l(:));
+% o_r = mean(x_r(:));
+% x_c = x_c - o_c;
+% x_l = x_l - o_l;
+% x_r = x_r - o_r;
 
 
 % Approximately find two points on wavelength calibration curve
-x1 = (mean(x_l,2) - mean(x_c,2)) / 2;
-x2 = (mean(x_c,2) - mean(x_r,2)) / 2;
-y1 = (lam_l(:,1) - lam_c(:,1)) / 2;
-y2 = (lam_c(:,1) - lam_r(:,1)) / 2;
+x1 = (mean(x_l,2) + mean(x_c,2)) / 2;
+x2 = (mean(x_c,2) + mean(x_r,2)) / 2;
+y1 = (lam_l(:,1) + lam_c(:,1)) / 2;
+y2 = (lam_c(:,1) + lam_r(:,1)) / 2;
 
 % Calculate calibration
 cal_m = (y2 - y1) ./ (x2 - x1);
@@ -49,18 +49,20 @@ for i = 1:size(lam_c,1)
     
 end
 
-figure(1);
+figure(7);
 hold off
 plot([wav_l', wav_c',wav_r'], [R_l',R_c', R_r']);
 hold on
 
-figure(3);
+figure(8);
 hold off
 plot([wav_l', wav_c',wav_r'], [sigmaL_l',sigmaL_c', sigmaL_r']);
 hold on
 
-figure(2);
+figure(9);
+hold off
 plot([wav_l', wav_c',wav_r'], [sigmaX_l',sigmaX_c', sigmaX_r']);
+hold on
 
 end
 

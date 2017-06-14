@@ -52,7 +52,7 @@ dir = '../output/';
 cmd_rmdir(dir);
 mkdir(dir);
 
-plot_spot(rays_left, rays_center, rays_right, phiS, dir);
+%plot_spot(rays_left, rays_center, rays_right, phiS, dir);
 
 plot_resolution( rays_left, rays_center, rays_right, phiS, dir )
 
