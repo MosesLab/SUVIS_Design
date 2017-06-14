@@ -120,7 +120,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	double h_d = N_d / 2.0 * d_d;	// Full height of the detector
 	double h_s = h_d; // Height of aperture
 
-	double w_d = ( (double) N_d - 1)* d_d;
+	double w_d = ( (double) N_d)* d_d;
 
 	double RR = R_g / 2.0;	// Radius of rowland circle
 
@@ -155,13 +155,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	double beta_0 = angle2d(z_gn, x_gn, z_p_0 - z_g, x_p_0 - x_g);	// Wavelength on left edge of detector
 	double beta_1 = angle2d(z_gn, x_gn, z_d - z_g, x_d - x_g);	// wavelength in center of detector
 	double beta_2 = angle2d(z_gn, x_gn, z_p_2 - z_g, x_p_2 - x_g);	// wavelength on right edge of detector
-	//cout << beta_0 << " " << beta_1 << " " << beta_2 << endl;
 
 	// Wavelength at center of detector
 	double lambda_0 = (d_g / ((double)m)) * (sin(alpha) + sin(beta_0));
 	double lambda_1 = (d_g / ((double)m)) * (sin(alpha) + sin(beta_1));
 	double lambda_2 = (d_g / ((double)m)) * (sin(alpha) + sin(beta_2));
-	//cout << lambda_0 << " " << lambda_1 << " " << lambda_2 << endl;
 
 	// Calculate vectors from center of grating to edge of grating
 	// in the plane of the Rowland circle
