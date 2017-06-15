@@ -16,10 +16,10 @@ r_s = 3.0;        % (mm) radius of feed optic
 
 % Raytrace densities
 field_den = 5;  % Number of field angles to sample per axis
-ray_den = 5;   % Number of rays in pupil per axis
+ray_den = 21;   % Number of rays in pupil per axis
 tot_rays = field_den^2 * ray_den^2;
 
-phiS_resolution = 9;  % Number of slit positions
+phiS_resolution = 21;  % Number of slit positions
 d_phiS = (phiS_max - phiS_min) / (phiS_resolution - 1);     % Angle between each slit position
 phiS = phiS_min : d_phiS : phiS_max;
 
@@ -54,6 +54,6 @@ mkdir(dir);
 
 plot_spot(rays_left, rays_center, rays_right, phiS, dir);
 
-plot_resolution( rays_left, rays_center, rays_right, phiS, dir )
+plot_resolution( rays_left, rays_center, rays_right, phiS, dir , d_d)
 
 

@@ -1,4 +1,4 @@
-function [ ] = plot_resolution( left, center, right, phi_s, dir )
+function [ ] = plot_resolution( left, center, right, phi_s, dir, d_d )
 
 % Create directory where output from this script will be stored
 plot_dir = strcat(dir, 'resolution/');
@@ -9,6 +9,14 @@ mkdir(strcat(dir, plot_dir));
 [lam_l, hx_l, hy_l, px_l, py_l, x_l, y_l, vig_l] = get_ray_data(left);
 [lam_r, hx_r, hy_r, px_r, py_r, x_r, y_r, vig_r] = get_ray_data(right);
 
+% subtract mean for accurate comparison
+o_c = mean(x_c(:));
+o_l = mean(x_l(:));
+o_r = mean(x_r(:));
+% x_c = x_c - o_c;
+% x_l = x_l - o_l;
+% x_r = x_r - o_r;
+
 x_l = x_l * 1e3;    % Convert detector position to microns
 x_c = x_c * 1e3;  
 x_r = x_r * 1e3;  
@@ -16,14 +24,6 @@ x_r = x_r * 1e3;
 lam_l = lam_l * 1e3;    % Convert wavelength to nm
 lam_c = lam_c * 1e3;  
 lam_r = lam_r * 1e3;  
-
-% subtract mean for accurate comparison
-% o_c = mean(x_c(:));
-% o_l = mean(x_l(:));
-% o_r = mean(x_r(:));
-% x_c = x_c - o_c;
-% x_l = x_l - o_l;
-% x_r = x_r - o_r;
 
 
 % Approximately find two points on wavelength calibration curve
@@ -51,9 +51,9 @@ for i = 1:size(lam_c,1)
     wav_c(i) = lam_c(i,1);
     wav_r(i) = lam_r(i,1);
     
-    R_l(i) = 2 * sigmaL_l(i) / wav_l(i);
-    R_c(i) = 2 * sigmaL_c(i) / wav_c(i);
-    R_r(i) = 2 * sigmaL_r(i) / wav_r(i);
+    R_l(i) = 1 / (2 * sigmaL_l(i) / wav_l(i));
+    R_c(i) = 1 / (2 * sigmaL_c(i) / wav_c(i));
+    R_r(i) = 1 / (2 * sigmaL_r(i) / wav_r(i));
     
 end
 
@@ -61,9 +61,10 @@ figure(7);
 hold off
 plot([wav_l', wav_c',wav_r'], [R_l',R_c', R_r']);
 hold on
-title('Effective Resolution vs. Wavelength');
+title('Resolving Power vs. Wavelength');
 xlabel('wavelength (nm)');
-ylabel('Resolution');
+ylabel('Resolving Power');
+legend(sprintf('center offset = %0.3f\n', o_l),sprintf('center offset = %0.3f\n', o_c),sprintf('center offset = %0.3f\n', o_r),'Location','SouthEast')
 print(sprintf('%sresolution_vs_wavelength.pdf', plot_dir), '-dpdfwrite');
 print(sprintf('%sresolution_vs_wavelength.png', plot_dir), '-dpng');
 
@@ -74,6 +75,7 @@ hold on
 title('Spot Standard Deviation (wavelength units) vs. Wavelength');
 xlabel('wavelength (nm)');
 ylabel('standard deviation (nm) ');
+legend(sprintf('center offset = %0.3f\n', o_l),sprintf('center offset = %0.3f\n', o_c),sprintf('center offset = %0.3f\n', o_r),'Location','SouthEast')
 print(sprintf('%ssigmaL_vs_wavelength.pdf', plot_dir), '-dpdfwrite');
 print(sprintf('%ssigmaL_vs_wavelength.png', plot_dir), '-dpng');
 
@@ -84,6 +86,7 @@ hold on
 title('Spot Standard Deviation (detector units) vs. Wavelength');
 xlabel('wavelength (nm)');
 ylabel('standard deviation (microns) ');
+legend(sprintf('center offset = %0.3f\n', o_l),sprintf('center offset = %0.3f\n', o_c),sprintf('center offset = %0.3f\n', o_r),'Location','SouthEast')
 print(sprintf('%ssigmaX_vs_wavelength.pdf', plot_dir), '-dpdfwrite');
 print(sprintf('%ssigmaX_vs_wavelength.png', plot_dir), '-dpng');
 
