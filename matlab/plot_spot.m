@@ -1,5 +1,8 @@
 function [ ] = plot_spot( left, center, right, phi_s, dir )
 
+s_sz = 15.74;
+
+
 % Create directory where output from this script will be stored
 spot_dir = strcat(dir, 'spot/');
 mkdir(dir);
@@ -14,6 +17,10 @@ mkdir(r_dir)
 [lam_c, hx_c, hy_c, px_c, py_c, x_c, y_c, vig_c] = get_ray_data(center);
 [lam_l, hx_l, hy_l, px_l, py_l, x_l, y_l, vig_l] = get_ray_data(left);
 [lam_r, hx_r, hy_r, px_r, py_r, x_r, y_r, vig_r] = get_ray_data(right);
+
+x_l = x_l * 1e3;    % Convert detector position to microns
+x_c = x_c * 1e3;
+x_r = x_r * 1e3;
 
 % subtract mean for accurate comparison
 o_c = mean(x_c(:));
@@ -33,10 +40,11 @@ max_y = mar * max(all_y(:));
 
 pt_sz = 20; % Size of points in scatterplot
 figure(10);
+
 for i = 1:size(x_c,1)
     i_c = find(vig_c(i,:) == 0);
     hold off
-    scatter(x_c(i,i_c), y_c(i,i_c), pt_sz, hx_c(i,i_c), 'filled');
+    gscatter(x_c(i,i_c), y_c(i,i_c), s_sz * hx_c(i,i_c));
     hold on
     xlim([min_x, max_x]);
     ylim([min_y, max_y]);
@@ -48,7 +56,7 @@ for i = 1:size(x_c,1)
     
     i_l = find(vig_l(i,:) == 0);
     hold off
-    scatter(x_l(i,i_l), y_l(i,i_l), pt_sz, hx_l(i,i_l), 'filled');
+    gscatter(x_l(i,i_l), y_l(i,i_l), s_sz * hx_l(i,i_l));
     hold on
     xlim([min_x, max_x]);
     ylim([min_y, max_y]);
@@ -60,7 +68,7 @@ for i = 1:size(x_c,1)
     
     i_r = find(vig_r(i,:) == 0);
     hold off
-    scatter(x_r(i,i_r), y_r(i,i_r), pt_sz, hx_r(i,i_r), 'filled');
+    gscatter(x_r(i,i_r), y_r(i,i_r), s_sz * hx_r(i,i_r));
     hold on
     xlim([min_x, max_x]);
     ylim([min_y, max_y]);

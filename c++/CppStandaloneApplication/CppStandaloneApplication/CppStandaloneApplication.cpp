@@ -116,6 +116,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	int field_density = stoi(argv[12]);
 	int ray_density = stoi(argv[13]);
 
+	double s_sz = 0.2623;		// Sun angular size (deg)
 
 	double h_d = N_d / 2.0 * d_d;	// Full height of the detector
 	double h_s = h_d; // Height of aperture
@@ -198,33 +199,21 @@ int _tmain(int argc, _TCHAR* argv[])
 	double vdx = (x_v_plus + x_v_minus) / 2.0 / (TheSystem->SystemData->Aperture->ApertureValue / 2.0);
 	double vcx = 1 - (abs(x_v_plus - x_v_minus) / 2.0) / (TheSystem->SystemData->Aperture->ApertureValue / 2.0);
 	IFieldPtr f0 = TheSystem->SystemData->Fields->GetField(1);
-	IFieldPtr f1 = TheSystem->SystemData->Fields->AddField(0.25, 0.0, 1.0);
-	IFieldPtr f2 = TheSystem->SystemData->Fields->AddField(-0.25, 0.0, 1.0);
-	IFieldPtr f3 = TheSystem->SystemData->Fields->AddField(0.0, 0.25, 1.0);
-	IFieldPtr f4 = TheSystem->SystemData->Fields->AddField(0.0, -0.25, 1.0);
-	IFieldPtr f5 = TheSystem->SystemData->Fields->AddField(0.25, 0.25, 1.0);
-	IFieldPtr f6 = TheSystem->SystemData->Fields->AddField(-0.25, 0.25, 1.0);
-	IFieldPtr f7 = TheSystem->SystemData->Fields->AddField(-0.25, -0.25, 1.0);
-	IFieldPtr f8 = TheSystem->SystemData->Fields->AddField(0.25, -0.25, 1.0);
+	IFieldPtr f1 = TheSystem->SystemData->Fields->AddField(s_sz, 0.0, 1.0);
+	IFieldPtr f2 = TheSystem->SystemData->Fields->AddField(-s_sz, 0.0, 1.0);
+	IFieldPtr f3 = TheSystem->SystemData->Fields->AddField(0.0, s_sz, 1.0);
+	IFieldPtr f4 = TheSystem->SystemData->Fields->AddField(0.0, -s_sz, 1.0);
 	f0->VDX = vdx;
 	f1->VDX = vdx;
 	f2->VDX = vdx;
 	f3->VDX = vdx;
 	f4->VDX = vdx;
-	f5->VDX = vdx;
-	f6->VDX = vdx;
-	f7->VDX = vdx;
-	f8->VDX = vdx;
 	f0->VCX = vcx;
 	f1->VCX = vcx;
 	f2->VCX = vcx;
 	f3->VCX = vcx;
 	f4->VCX = vcx;
-	f5->VCX = vcx;
-	f6->VCX = vcx;
-	f7->VCX = vcx;
-	f8->VCX = vcx;
-	TheSystem->SystemData->Fields->Normalization = FieldNormalizationType_Radial;
+	TheSystem->SystemData->Fields->Normalization = FieldNormalizationType_Rectangular;
 
 	// Enable ray aiming to determine the correct stop location
 	//TheSystem->SystemData->RayAiming->RayAiming = RayAimingMethod_Real;

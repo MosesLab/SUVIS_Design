@@ -18,12 +18,14 @@ o_r = mean(x_r(:));
 % x_r = x_r - o_r;
 
 x_l = x_l * 1e3;    % Convert detector position to microns
-x_c = x_c * 1e3;  
-x_r = x_r * 1e3;  
+x_c = x_c * 1e3;
+x_r = x_r * 1e3;
+
+d_d = 1e3 * d_d;    % Convert pixel size to microns
 
 lam_l = lam_l * 1e3;    % Convert wavelength to nm
-lam_c = lam_c * 1e3;  
-lam_r = lam_r * 1e3;  
+lam_c = lam_c * 1e3;
+lam_r = lam_r * 1e3;
 
 
 % Approximately find two points on wavelength calibration curve
@@ -35,17 +37,24 @@ y2 = (lam_c(:,1) + lam_r(:,1)) / 2;
 % Calculate calibration
 cal_m = (y2 - y1) ./ (x2 - x1);
 
+% Calculate std deviation of pixel size
+sigmaP = d_d / sqrt(12);    % \frac{\int_{-d/2}^{d/2} x^2 dx}{\int_{-d/2}^{d/2} dx} (microns)
+
 for i = 1:size(lam_c,1)
     
     % Calculate standard deviation of rays
-    sigmaX_l(i) = std(x_l(i, vig_l(i,:) == 0));
-    sigmaX_c(i) = std(x_c(i, vig_c(i,:) == 0));
-    sigmaX_r(i) = std(x_r(i, vig_r(i,:) == 0));
+    sigmaX_l(i) = sqrt(std(x_l(i, vig_l(i,:) == 0))^2 + sigmaP^2);
+    sigmaX_c(i) = sqrt(std(x_c(i, vig_c(i,:) == 0))^2 + sigmaP^2);
+    sigmaX_r(i) = sqrt(std(x_r(i, vig_r(i,:) == 0))^2 + sigmaP^2);
     
     % Convert to wavelength units
-    sigmaL_l(i) = std(cal_m(i) .* (x_l(i,vig_l(i,:) == 0) - x1(i)) + y1(i));
-    sigmaL_c(i) = std(cal_m(i) .* (x_c(i,vig_c(i,:) == 0) - x1(i)) + y1(i));
-    sigmaL_r(i) = std(cal_m(i) .* (x_r(i,vig_r(i,:) == 0) - x1(i)) + y1(i));  
+    sigmaL_l(i) = sqrt(std(cal_m(i) .* (x_l(i,vig_l(i,:) == 0) - x1(i)) + y1(i))^2 + ...
+        (((cal_m(i) * (o_l - x1(i)) + y1(i)) - (cal_m(i) * (o_l + d_d - x1(i)) + y1(i)))/sqrt(12))^2);
+    sigmaL_c(i) = sqrt(std(cal_m(i) .* (x_c(i,vig_c(i,:) == 0) - x1(i)) + y1(i))^2 + ...
+        (((cal_m(i) * (o_c - x1(i)) + y1(i)) - (cal_m(i) * (o_c + d_d - x1(i)) + y1(i)))/sqrt(12))^2);
+    sigmaL_r(i) = sqrt(std(cal_m(i) .* (x_r(i,vig_r(i,:) == 0) - x1(i)) + y1(i))^2 + ...
+        (((cal_m(i) * (o_r - x1(i)) + y1(i)) - (cal_m(i) * (o_r + d_d - x1(i)) + y1(i)))/sqrt(12))^2);
+    
     
     wav_l(i) = lam_l(i,1); % wavelength
     wav_c(i) = lam_c(i,1);
