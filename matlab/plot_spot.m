@@ -48,9 +48,9 @@ for i = 1:size(x_c,1)
     hold on
     xlim([min_x, max_x]);
     ylim([min_y, max_y]);
-    title(sprintf('Spot Diagram\n detector center offset = %0.3f\n wavelength = %0.0f nm\n slit position = %0.1f deg', o_c, 1e3 * lam_c(i,1), rad2deg(phi_s(i))));
-    xlabel('Detector X (mm from center)');
-    ylabel('Detector Y (mm from center)');
+    title(sprintf('Spot Diagram\n centroid X position = %0.3f\n wavelength = %0.0f nm\n slit position = %0.1f deg', 1e-3 * o_c, 1e3 * lam_c(i,1), rad2deg(phi_s(i))));
+    xlabel('Detector X (um from centroid)');
+    ylabel('Detector Y (mm from detector center)');
     print(sprintf('%sspot_center_%0.0f_%0.0f.pdf', c_dir, 1e3 * lam_c(i,1), rad2deg(phi_s(i))),'-dpdfwrite');
     print(sprintf('%sspot_center_%0.0f_%0.0f.png', c_dir, 1e3 * lam_c(i,1), rad2deg(phi_s(i))),'-dpng');
     
@@ -60,9 +60,9 @@ for i = 1:size(x_c,1)
     hold on
     xlim([min_x, max_x]);
     ylim([min_y, max_y]);
-    title(sprintf('Spot Diagram\n detector center offset = %0.3f\n wavelength = %0.0f nm\n slit position = %0.1f deg', o_l, 1e3 * lam_l(i,1), rad2deg(phi_s(i))));
-    xlabel('Detector X (mm from center)');
-    ylabel('Detector Y (mm from center)');
+    title(sprintf('Spot Diagram\n centroid X position = %0.3f\n wavelength = %0.0f nm\n slit position = %0.1f deg', 1e-3 * o_l, 1e3 * lam_l(i,1), rad2deg(phi_s(i))));
+    xlabel('Detector X (um from centroid)');
+    ylabel('Detector Y (mm from detector center)');
     print(sprintf('%sspot_left_%0.0f_%0.0f.pdf', l_dir, 1e3 * lam_l(i,1), rad2deg(phi_s(i))),'-dpdfwrite');
     print(sprintf('%sspot_left_%0.0f_%0.0f.png', l_dir, 1e3 * lam_l(i,1), rad2deg(phi_s(i))),'-dpng');
     
@@ -72,9 +72,9 @@ for i = 1:size(x_c,1)
     hold on
     xlim([min_x, max_x]);
     ylim([min_y, max_y]);
-    title(sprintf('Spot Diagram\n detector center offset = %0.3f\n wavelength = %0.0f nm\n slit position = %0.1f deg', o_r, 1e3 * lam_r(i,1), rad2deg(phi_s(i))));
-    xlabel('Detector X (mm from center)');
-    ylabel('Detector Y (mm from center)');
+    title(sprintf('Spot Diagram\n centroid X position = %0.3f\n wavelength = %0.0f nm\n slit position = %0.1f deg', 1e-3 * o_r, 1e3 * lam_r(i,1), rad2deg(phi_s(i))));
+    xlabel('Detector X (um from centroid)');
+    ylabel('Detector Y (mm from detector center)');
     print(sprintf('%sspot_right_%0.0f_%0.0f.pdf', r_dir, 1e3 * lam_r(i,1), rad2deg(phi_s(i))),'-dpdfwrite');
     print(sprintf('%sspot_right_%0.0f_%0.0f.png', r_dir, 1e3 * lam_r(i,1), rad2deg(phi_s(i))),'-dpng');
     

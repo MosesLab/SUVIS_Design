@@ -16,7 +16,7 @@ r_s = 3.0;        % (mm) radius of feed optic
 
 % Raytrace densities
 field_den = 7;  % Number of field angles to sample per axis
-ray_den = 21;   % Number of rays in pupil per axis
+ray_den = 25;   % Number of rays in pupil per axis
 tot_rays = field_den^2 * ray_den^2;
 
 phiS_resolution = 25;  % Number of slit positions
