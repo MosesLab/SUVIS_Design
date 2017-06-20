@@ -43,9 +43,12 @@ sigmaP = d_d / sqrt(12);    % \frac{\int_{-d/2}^{d/2} x^2 dx}{\int_{-d/2}^{d/2} 
 for i = 1:size(lam_c,1)
     
     % Calculate standard deviation of rays
-    sigmaX_l(i) = sqrt(std(x_l(i, vig_l(i,:) == 0))^2 + sigmaP^2);
-    sigmaX_c(i) = sqrt(std(x_c(i, vig_c(i,:) == 0))^2 + sigmaP^2);
-    sigmaX_r(i) = sqrt(std(x_r(i, vig_r(i,:) == 0))^2 + sigmaP^2);
+%     sigmaX_l(i) = sqrt(std(x_l(i, vig_l(i,:) == 0))^2 + sigmaP^2);
+%     sigmaX_c(i) = sqrt(std(x_c(i, vig_c(i,:) == 0))^2 + sigmaP^2);
+%     sigmaX_r(i) = sqrt(std(x_r(i, vig_r(i,:) == 0))^2 + sigmaP^2);
+    sigmaX_l(i) = std(x_l(i, vig_l(i,:) == 0));
+    sigmaX_c(i) = std(x_c(i, vig_c(i,:) == 0));
+    sigmaX_r(i) = std(x_r(i, vig_r(i,:) == 0));
     
     % Convert to wavelength units
     sigmaL_l(i) = sqrt(std(cal_m(i) .* (x_l(i,vig_l(i,:) == 0) - x1(i)) + y1(i))^2 + ...
@@ -73,8 +76,8 @@ hold on
 title('Resolving Power vs. Wavelength');
 xlabel('wavelength (nm)');
 ylabel('Resolving Power');
-legend(sprintf('center offset = %0.3f\n', o_l),sprintf('center offset = %0.3f\n', o_c),sprintf('center offset = %0.3f\n', o_r),'Location','SouthEast')
-print(sprintf('%sresolution_vs_wavelength.pdf', plot_dir), '-dpdfwrite');
+legend(sprintf('center offset = %0.3f\n', o_l),sprintf('center offset = %0.3f\n', o_c),sprintf('center offset = %0.3f\n', o_r),'Location','NorthEast')
+print(sprintf('%sresolution_vs_wavelength.eps', plot_dir), '-depsc');
 print(sprintf('%sresolution_vs_wavelength.png', plot_dir), '-dpng');
 
 figure(8);
@@ -85,7 +88,7 @@ title('Spot Standard Deviation (wavelength units) vs. Wavelength');
 xlabel('wavelength (nm)');
 ylabel('standard deviation (nm) ');
 legend(sprintf('center offset = %0.3f\n', o_l),sprintf('center offset = %0.3f\n', o_c),sprintf('center offset = %0.3f\n', o_r),'Location','SouthEast')
-print(sprintf('%ssigmaL_vs_wavelength.pdf', plot_dir), '-dpdfwrite');
+print(sprintf('%ssigmaL_vs_wavelength.eps', plot_dir), '-depsc');
 print(sprintf('%ssigmaL_vs_wavelength.png', plot_dir), '-dpng');
 
 figure(9);
@@ -96,7 +99,7 @@ title('Spot Standard Deviation (detector units) vs. Wavelength');
 xlabel('wavelength (nm)');
 ylabel('standard deviation (microns) ');
 legend(sprintf('center offset = %0.3f\n', o_l),sprintf('center offset = %0.3f\n', o_c),sprintf('center offset = %0.3f\n', o_r),'Location','SouthEast')
-print(sprintf('%ssigmaX_vs_wavelength.pdf', plot_dir), '-dpdfwrite');
+print(sprintf('%ssigmaX_vs_wavelength.eps', plot_dir), '-depsc');
 print(sprintf('%ssigmaX_vs_wavelength.png', plot_dir), '-dpng');
 
 end

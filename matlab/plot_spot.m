@@ -36,22 +36,31 @@ all_y = [y_c(:), y_l(:), y_r(:)];
 min_x = mar * min(all_x(:));
 max_x = mar * max(all_x(:));
 min_y = mar * min(all_y(:));
-max_y = mar * max(all_y(:));
+max_y = 1.75 * max(all_y(:));
 
 pt_sz = 20; % Size of points in scatterplot
 figure(10);
 
+% Create legend string
+u_hx = s_sz * unique(hx_c);
+l_str_t = num2str(u_hx, '%0.1f''');
+l_str = cellstr(l_str_t);
+
 for i = 1:size(x_c,1)
+    
     i_c = find(vig_c(i,:) == 0);
     hold off
     gscatter(x_c(i,i_c), y_c(i,i_c), s_sz * hx_c(i,i_c));
     hold on
     xlim([min_x, max_x]);
     ylim([min_y, max_y]);
-    title(sprintf('Spot Diagram\n centroid X position = %0.3f\n wavelength = %0.0f nm\n slit position = %0.1f deg', 1e-3 * o_c, 1e3 * lam_c(i,1), rad2deg(phi_s(i))));
+    title(sprintf('Spot Diagram\n centroid X position = %0.1f um', 1e-3 * o_c));
+    text(0.92 * min_x, 0.92 * max_y, sprintf('wavelength = %0.0f nm\nfeed optic position = %0.1f deg\nspot width ($2 \\sigma$) = %0.1f um',  1e3 * lam_c(i,1), rad2deg(phi_s(i)), 2 * std(x_c(i, vig_c(i,:) == 0))), 'VerticalAlignment', 'top', 'BackgroundColor', 'white', 'EdgeColor', 'black', 'Interpreter', 'latex');
+    legend(l_str, 'Location', 'northeast');
     xlabel('Detector X (um from centroid)');
     ylabel('Detector Y (mm from detector center)');
-    print(sprintf('%sspot_center_%0.0f_%0.0f.pdf', c_dir, 1e3 * lam_c(i,1), rad2deg(phi_s(i))),'-dpdfwrite');
+    legend(l_str);
+    print(sprintf('%sspot_center_%0.0f_%0.0f.eps', c_dir, 1e3 * lam_c(i,1), rad2deg(phi_s(i))),'-depsc');
     print(sprintf('%sspot_center_%0.0f_%0.0f.png', c_dir, 1e3 * lam_c(i,1), rad2deg(phi_s(i))),'-dpng');
     
     i_l = find(vig_l(i,:) == 0);
@@ -60,10 +69,12 @@ for i = 1:size(x_c,1)
     hold on
     xlim([min_x, max_x]);
     ylim([min_y, max_y]);
-    title(sprintf('Spot Diagram\n centroid X position = %0.3f\n wavelength = %0.0f nm\n slit position = %0.1f deg', 1e-3 * o_l, 1e3 * lam_l(i,1), rad2deg(phi_s(i))));
+    title(sprintf('Spot Diagram\n centroid X position = %0.1f um', 1e-3 * o_l));
+    text(0.92 * min_x, 0.92 * max_y, sprintf('wavelength = %0.0f nm\nfeed optic position = %0.1f deg\nspot width ($2 \\sigma$) = %0.1f um',  1e3 * lam_l(i,1), rad2deg(phi_s(i)), 2 * std(x_l(i, vig_l(i,:) == 0))), 'VerticalAlignment', 'top', 'BackgroundColor', 'white', 'EdgeColor', 'black', 'Interpreter', 'latex');
+    legend(l_str, 'Location', 'northeast');
     xlabel('Detector X (um from centroid)');
     ylabel('Detector Y (mm from detector center)');
-    print(sprintf('%sspot_left_%0.0f_%0.0f.pdf', l_dir, 1e3 * lam_l(i,1), rad2deg(phi_s(i))),'-dpdfwrite');
+    print(sprintf('%sspot_left_%0.0f_%0.0f.eps', l_dir, 1e3 * lam_l(i,1), rad2deg(phi_s(i))),'-depsc');
     print(sprintf('%sspot_left_%0.0f_%0.0f.png', l_dir, 1e3 * lam_l(i,1), rad2deg(phi_s(i))),'-dpng');
     
     i_r = find(vig_r(i,:) == 0);
@@ -72,10 +83,11 @@ for i = 1:size(x_c,1)
     hold on
     xlim([min_x, max_x]);
     ylim([min_y, max_y]);
-    title(sprintf('Spot Diagram\n centroid X position = %0.3f\n wavelength = %0.0f nm\n slit position = %0.1f deg', 1e-3 * o_r, 1e3 * lam_r(i,1), rad2deg(phi_s(i))));
-    xlabel('Detector X (um from centroid)');
+    title(sprintf('Spot Diagram\n centroid X position = %0.1f um', 1e-3 * o_r));
+    text(0.92 * min_x, 0.92 * max_y, sprintf('wavelength = %0.0f nm\nfeed optic position = %0.1f deg\nspot width ($2 \\sigma$) = %0.1f um',  1e3 * lam_r(i,1), rad2deg(phi_s(i)), 2 * std(x_r(i, vig_r(i,:) == 0))), 'VerticalAlignment', 'top', 'BackgroundColor', 'white', 'EdgeColor', 'black', 'Interpreter', 'latex');
+    legend(l_str, 'Location', 'northeast');xlabel('Detector X (um from centroid)');
     ylabel('Detector Y (mm from detector center)');
-    print(sprintf('%sspot_right_%0.0f_%0.0f.pdf', r_dir, 1e3 * lam_r(i,1), rad2deg(phi_s(i))),'-dpdfwrite');
+    print(sprintf('%sspot_right_%0.0f_%0.0f.eps', r_dir, 1e3 * lam_r(i,1), rad2deg(phi_s(i))),'-depsc');
     print(sprintf('%sspot_right_%0.0f_%0.0f.png', r_dir, 1e3 * lam_r(i,1), rad2deg(phi_s(i))),'-dpng');
     
 end
