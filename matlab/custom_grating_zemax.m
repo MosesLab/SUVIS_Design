@@ -54,6 +54,8 @@ mkdir(dir);
 
 plot_spot(rays_left, rays_center, rays_right, phiS, dir);
 
+plot_hist(rays_left, rays_center, rays_right, phiS, dir, d_d, field_den, ray_den);
+
 plot_resolution( rays_left, rays_center, rays_right, phiS, dir , d_d)
 
 
