@@ -46,9 +46,9 @@ for i = 1:size(x_c,1)
     hold on
     xlim([min_x, max_x]);
     ylim([min_y, max_y]);
-    xlabel('Detector X (um from centroid)');
+    xlabel('Detector X (µm from centroid)');
     ylabel(sprintf('Ray counts per %0.2f pixel', bin_w));
-    text(0.92 * min_x, 0.96 * max_y, sprintf('wavelength = %0.0f nm\nfeed optic position = %0.1f deg\nspot width (2\\sigma) = %0.1f um',...
+    text(0.92 * min_x, 0.96 * max_y, sprintf('wavelength = %0.0f nm\nfeed optic position = %0.1f deg\nspot width (2\\sigma) = %0.1f µm',...
         1e3 * lam_l(i,1), rad2deg(phi_s(i)), 2 * std(x_l(i, vig_l(i,:) == 0))), 'VerticalAlignment', 'top', 'BackgroundColor', 'white', 'EdgeColor', 'black');
     print(sprintf('%sspot_hist_%0.0f_%0.0f.eps', l_dir, 1e3 * lam_l(i,1), rad2deg(phi_s(i))),'-depsc');
     print(sprintf('%sspot_hist_%0.0f_%0.0f.png', l_dir, 1e3 * lam_l(i,1), rad2deg(phi_s(i))),'-dpng');
@@ -58,9 +58,9 @@ for i = 1:size(x_c,1)
     hold on
     xlim([min_x, max_x]);
     ylim([min_y, max_y]);
-    xlabel('Detector X (um from centroid)');
+    xlabel('Detector X (µm from centroid)');
     ylabel(sprintf('Ray counts per %0.2f pixel', bin_w));
-    text(0.92 * min_x, 0.96 * max_y, sprintf('wavelength = %0.0f nm\nfeed optic position = %0.1f deg\nspot width (2\\sigma) = %0.1f um',...
+    text(0.92 * min_x, 0.96 * max_y, sprintf('wavelength = %0.0f nm\nfeed optic position = %0.1f deg\nspot width (2\\sigma) = %0.1f µm',...
         1e3 * lam_c(i,1), rad2deg(phi_s(i)), 2 * std(x_c(i, vig_c(i,:) == 0))), 'VerticalAlignment', 'top', 'BackgroundColor', 'white', 'EdgeColor', 'black');
     print(sprintf('%sspot_hist_%0.0f_%0.0f.eps', c_dir, 1e3 * lam_c(i,1), rad2deg(phi_s(i))),'-depsc');
     print(sprintf('%sspot_hist_%0.0f_%0.0f.png', c_dir, 1e3 * lam_c(i,1), rad2deg(phi_s(i))),'-dpng');
@@ -70,9 +70,9 @@ for i = 1:size(x_c,1)
     hold on
     xlim([min_x, max_x]);
     ylim([min_y, max_y]);
-    xlabel('Detector X (um from centroid)');
+    xlabel('Detector X (µm from centroid)');
     ylabel(sprintf('Ray counts per %0.2f pixel', bin_w));
-    text(0.92 * min_x, 0.96 * max_y, sprintf('wavelength = %0.0f nm\nfeed optic position = %0.1f deg\nspot width (2\\sigma) = %0.1f um',  ...
+    text(0.92 * min_x, 0.96 * max_y, sprintf('wavelength = %0.0f nm\nfeed optic position = %0.1f deg\nspot width (2\\sigma) = %0.1f µm',  ...
         1e3 * lam_r(i,1), rad2deg(phi_s(i)), 2 * std(x_r(i, vig_r(i,:) == 0))), 'VerticalAlignment', 'top', 'BackgroundColor', 'white', 'EdgeColor', 'black');
     print(sprintf('%sspot_hist_%0.0f_%0.0f.eps', r_dir, 1e3 * lam_r(i,1), rad2deg(phi_s(i))),'-depsc');
     print(sprintf('%sspot_hist_%0.0f_%0.0f.png', r_dir, 1e3 * lam_r(i,1), rad2deg(phi_s(i))),'-dpng');
