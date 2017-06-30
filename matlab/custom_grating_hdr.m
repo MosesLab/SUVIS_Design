@@ -15,3 +15,7 @@ r_s = 3.0;        % (mm) radius of feed optic
 N_phi = 11;     % Number of slit positions
 delta_phi = (phiS_max - phiS_min)/N_phi;
 phi_s_array = phiS_min:delta_phi:phiS_max; % Array of slit positions
+
+% Directory for outputs
+outdir = ['/tmp/', datestr(clock,'FURSTyyyymmddTHHMMSS'), '/']
+system(['mkdir ', outdir]);
