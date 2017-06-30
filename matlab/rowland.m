@@ -26,9 +26,6 @@ RR = R_g/2; % radius of Rowland circle
 N_g = w_g/d_g; % number of illuminated rulings
 
 % Cartesian coordinates of grating, slit, and detector (centers).
-phi_g;
-phi_s;
-phi_d;
 x_g = RR .* cos(phi_g);
 y_g = RR .* sin(phi_g);
 x_s = RR .* cos(phi_s);

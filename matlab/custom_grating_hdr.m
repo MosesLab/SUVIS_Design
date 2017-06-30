@@ -13,8 +13,9 @@ N_d   =   2048; % Number of detector pixels in the dispersion direction
 m     =      1; % spectral order
 r_s = 3.0;        % (mm) radius of feed optic
 N_phi = 11;     % Number of slit positions
-delta_phi = (phiS_max - phiS_min)/N_phi;
-phi_s_array = phiS_min:delta_phi:phiS_max; % Array of slit positions
+% Choose all slit locations
+delta_phi = (phiS_max - phiS_min)/(N_phi-1);
+phiS_array = phiS_min:delta_phi:phiS_max; % Array of slit positions
 
 % Directory for outputs
 outdir = ['/tmp/', datestr(clock,'FURSTyyyymmddTHHMMSS'), '/']
