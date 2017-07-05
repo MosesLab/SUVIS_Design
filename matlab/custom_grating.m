@@ -34,6 +34,7 @@ for k=1:N_phi
 endfor
 legend('1st solar image','grating','detector','Rowland circle','solar images 2:N','feed optics')
 title('FURST System Layout')
+axis equal
 print([outdir,'FURST_layout_s1.pdf'],'-dpdfwrite')
 print([outdir,'FURST_layout_s1.dxf'],'-ddxf')
 
