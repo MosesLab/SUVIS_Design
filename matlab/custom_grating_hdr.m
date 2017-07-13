@@ -19,5 +19,5 @@ delta_phi = (phiS_max - phiS_min)/(N_phi-1);
 phiS_array = phiS_min:delta_phi:phiS_max % Array of slit positions
 
 % Directory for outputs
-outdir = ['/tmp/', datestr(clock,'FURSTyyyymmddTHHMMSS'), '/']
-system(['mkdir ', outdir]);
+outdir = ['/tmp/', strcat('FURST', datestr(clock,'yyyymmddTHHMMSS')), '/'];
+system(strcat('mkdir ', outdir));

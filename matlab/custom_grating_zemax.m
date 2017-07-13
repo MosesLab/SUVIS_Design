@@ -1,6 +1,8 @@
+
 % Design using a custom grating as specified in the header:
 custom_grating_hdr
 % CCK 2017-Jun-30 put parameters into a header shared by this program and custom_grating.m
+
 
 % Raytrace densities
 field_den = 7;  % Number of field angles to sample per axis
@@ -42,6 +44,8 @@ mkdir(dir);
 
 plot_spot(rays_left, rays_center, rays_right, phiS, dir);
 
-plot_resolution( rays_left, rays_center, rays_right, phiS, dir , d_d)
+plot_hist(rays_left, rays_center, rays_right, phiS, dir, d_d, field_den, ray_den);
+
+plot_resolution( rays_left, rays_center, rays_right, phiS, dir , d_d);
 
 

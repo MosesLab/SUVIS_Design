@@ -73,10 +73,9 @@ figure(7);
 hold off
 plot([wav_l', wav_c',wav_r'], [R_l',R_c', R_r']);
 hold on
-title('Resolving Power vs. Wavelength');
 xlabel('wavelength (nm)');
 ylabel('Resolving Power');
-legend(sprintf('center offset = %0.3f\n', o_l),sprintf('center offset = %0.3f\n', o_c),sprintf('center offset = %0.3f\n', o_r),'Location','NorthEast')
+legend(sprintf('center offset = %0.3f mm\n ', o_l),sprintf('center offset = %0.3f mm\n', o_c),sprintf('center offset = %0.3f mm\n', o_r),'Location','NorthEast')
 print(sprintf('%sresolution_vs_wavelength.eps', plot_dir), '-depsc');
 print(sprintf('%sresolution_vs_wavelength.png', plot_dir), '-dpng');
 
@@ -87,7 +86,7 @@ hold on
 title('Spot Standard Deviation (wavelength units) vs. Wavelength');
 xlabel('wavelength (nm)');
 ylabel('standard deviation (nm) ');
-legend(sprintf('center offset = %0.3f\n', o_l),sprintf('center offset = %0.3f\n', o_c),sprintf('center offset = %0.3f\n', o_r),'Location','SouthEast')
+legend(sprintf('center offset = %0.3f mm\n', o_l),sprintf('center offset = %0.3f mm\n', o_c),sprintf('center offset = %0.3f mm\n', o_r),'Location','SouthEast')
 print(sprintf('%ssigmaL_vs_wavelength.eps', plot_dir), '-depsc');
 print(sprintf('%ssigmaL_vs_wavelength.png', plot_dir), '-dpng');
 
@@ -98,7 +97,7 @@ hold on
 title('Spot Standard Deviation (detector units) vs. Wavelength');
 xlabel('wavelength (nm)');
 ylabel('standard deviation (microns) ');
-legend(sprintf('center offset = %0.3f\n', o_l),sprintf('center offset = %0.3f\n', o_c),sprintf('center offset = %0.3f\n', o_r),'Location','SouthEast')
+legend(sprintf('center offset = %0.3f mm\n', o_l),sprintf('center offset = %0.3f mm\n', o_c),sprintf('center offset = %0.3f mm\n', o_r),'Location','SouthEast')
 print(sprintf('%ssigmaX_vs_wavelength.eps', plot_dir), '-depsc');
 print(sprintf('%ssigmaX_vs_wavelength.png', plot_dir), '-dpng');
 
