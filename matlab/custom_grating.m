@@ -9,7 +9,7 @@ custom_grating_hdr
 % CCK 2017-Jun-27 attempting to resolve differences with Roy's custom_grating_zemax.m; have
 %  imported his parameters and commented out my current ones.
 % CCK 2017-Jun-30 put parameters into a header shared by this program and custom_grating_zemax.m
-
+% CCK 2017-Jul-11 inserted some statements to print critical coordinates.
 figure(1)
 [lambdas, deltas, delta_diffract, delta_pix, delta_slit] = rowland(phiS_min, phi_g, phi_d, R_g, w_g, d_s, d_g, d_d, N_d, m);
 deltas = deltas * sqrt(3/2);
@@ -23,15 +23,23 @@ RR = R_g/2; % radius of Rowland circle
 xslits = RR * cos(phiS_array);
 yslits = RR * sin(phiS_array);
 plot(xslits(2:end), yslits(2:end), 'b+')
+x0 = [];
+y0 = [];
 for k=1:N_phi
-   x0 = xslits(k) + r_s/2;
-   y0 = yslits(k);
+   x0(k) = xslits(k) + r_s/2;
+   y0(k) = yslits(k);
    thetas = 0:pi/18:2*pi;
-   xf = x0 + r_s * cos(thetas);
-   yf = y0 + r_s * sin(thetas);
+   xf = x0(k) + r_s * cos(thetas);
+   yf = y0(k) + r_s * sin(thetas);
    %plot(x0,y0,'r.')
    plot(xf,yf,'r')
 endfor
+
+% Now echo the essential coordinates to the terminal
+feed_optic_xy = [x0',y0'] % print out coordinates for the cylinders
+detector_xy   = [cos(phi_d),sin(phi_d)]*RR
+grating_xy    = [cos(phi_g),sin(phi_g)]*RR
+
 legend('1st solar image','grating','detector','Rowland circle','solar images 2:N','feed optics')
 title('FURST System Layout')
 axis equal
