@@ -1,33 +1,52 @@
-% Design using a custom grating
-offset = 4.1*pi/180; % Offset detector from normal
-phi_s =  offset + 10*pi/180; % (rad) angular position of slit     on Rowland Circle
-phi_g = pi-offset; % (rad) angular position of grating  on Rowland Circle
-phi_d = offset; % (rad) angular position of detector on Rowland Circle
-R_g   =   1500.0; % (mm)  grating radius
-w_g   =    100.0; % (mm) grating width
-d_s   =  15e-3; % (mm) width of slit
-d_g   = 1/2160; % (mm) grating groove period
-d_d   =  15e-3; % (mm) detector pixel spacing
-N_d   =   2048; % Number of detector pixels in the dispersion direction
-m     =      1; % spectral order
-r_s = 3.0;        % (mm) radius of feed optic
+% Design using a custom grating as specified in custom_grating_hdr.m :
+custom_grating_hdr
+
+
 % CCK 2017-May-30 updated after correcting an error in rowland.m
+% CCK 2017-Jun-01 added error budget for aberration, width one pixel, on the assumption that
+%  deltas as returned by rowland.m essentially contains two such terms. My reasoning is that the
+%  diffraction term is negligible, and I have made my slit 1 pixel wide.
+% CCK 2017-Jun-27 attempting to resolve differences with Roy's custom_grating_zemax.m; have
+%  imported his parameters and commented out my current ones.
+% CCK 2017-Jun-30 put parameters into a header shared by this program and custom_grating_zemax.m
 
 figure(1)
-[lambdas, deltas] = rowland(phi_s, phi_g, phi_d, R_g, w_g, d_s, d_g, d_d, N_d, m);
+[lambdas, deltas, delta_diffract, delta_pix, delta_slit] = rowland(phiS_min, phi_g, phi_d, R_g, w_g, d_s, d_g, d_d, N_d, m);
+deltas = deltas * sqrt(3/2);
 title('Innermost slit position')
 xlabel('x (mm)')
 ylabel('y (mm)')
-print('custom_grating_layout_s1.pdf','-dpdfwrite')
+print([outdir,'custom_grating_layout_s1.pdf'],'-dpdfwrite')
+% Now plot all slit and feed optic locations.
+hold on
+RR = R_g/2; % radius of Rowland circle
+xslits = RR * cos(phiS_array);
+yslits = RR * sin(phiS_array);
+plot(xslits(2:end), yslits(2:end), 'b+')
+for k=1:N_phi
+   x0 = xslits(k) + r_s/2;
+   y0 = yslits(k);
+   thetas = 0:pi/18:2*pi;
+   xf = x0 + r_s * cos(thetas);
+   yf = y0 + r_s * sin(thetas);
+   %plot(x0,y0,'r.')
+   plot(xf,yf,'r')
+endfor
+legend('1st solar image','grating','detector','Rowland circle','solar images 2:N','feed optics')
+title('FURST System Layout')
+axis equal
+print([outdir,'FURST_layout_s1.pdf'],'-dpdfwrite')
+print([outdir,'FURST_layout_s1.dxf'],'-ddxf')
+
 
 figure(2)
 hold off
-plot(lambdas*1e6)
+plot(delta_pix*1e9,'k')
 hold on
-title('Innermost slit position')
+plot(delta_slit*1e9,'b')
+title('Wavelength Blurring Terms')
 xlabel('pixel')
-ylabel('wavelength (nm)')
-print('custom_grating_lambdas_s1.pdf','-dpdfwrite')
+ylabel('\Delta\lambda (pm)')
 
 figure(3)
 hold off
@@ -36,16 +55,26 @@ hold on
 title('Innermost slit position')
 xlabel('wavelength (nm)')
 ylabel('effective resolving power')
-print('custom_grating_resolution_s1.pdf','-dpdfwrite')
+print([outdir,'custom_grating_resolution_s1.pdf'],'-dpdfwrite')
 
-phi_s = 40*pi/180; % increase to get up to 2000 Å
+lambdas_s1 = lambdas; % keep track of lambdas at initial slit position
+
 figure(4)
-[lambdas, deltas] = rowland(phi_s, phi_g, phi_d, R_g, w_g, d_s, d_g, d_d, N_d, m);
+[lambdas, deltas, delta_diffract, delta_pix, delta_slit] = rowland(phiS_max, phi_g, phi_d, R_g, w_g, d_s, d_g, d_d, N_d, m);
+deltas = deltas * sqrt(3/2);
 plot([850,-850,-850,850],[-30,-30,420,420],'k:')
 title('Outermost slit position')
 xlabel('x (mm)')
 ylabel('y (mm)')
-print('custom_grating_layout_sn.pdf','-dpdfwrite')
+print([outdir,'custom_grating_layout_sn.pdf'],'-dpdfwrite')
+
+% Work out whether we have enough feed optic positions to provide continuous coverage. 
+lambdas_sn = lambdas; % for comparison to lambdas_sn
+lambdas_sub_interval_s1 = lambdas_s1(end)-lambdas_s1(1)
+lambdas_sub_interval_sn = lambdas_sn(end)-lambdas_sn(1) % exactly equal to lambdas_interval_s1 !!!
+lambdas_full_interval = lambdas_sn(end) - lambdas_s1(1) % whole instrument wavelength range
+num_positions = N_phi
+num_positions_required = lambdas_full_interval / lambdas_sub_interval_s1 %
 
 figure(5)
 hold off
@@ -54,7 +83,7 @@ hold on
 title('Outermost slit position')
 xlabel('pixel')
 ylabel('wavelength (nm)')
-print('custom_grating_lambdas_sn.pdf','-dpdfwrite')
+print([outdir,'custom_grating_lambdas_sn.pdf'],'-dpdfwrite')
 
 figure(6)
 hold off
@@ -63,6 +92,12 @@ hold on
 title('Outermost slit position')
 xlabel('wavelength (nm)')
 ylabel('effective resolving power')
-print('custom_grating_resolution_sn.pdf','-dpdfwrite')
+print([outdir,'custom_grating_resolution_sn.pdf'],'-dpdfwrite')
 
+
+figure(2)
+plot(delta_pix*1e9,'k')
+plot(delta_slit*1e9,'m')
+legend('Innermost: pixels','Innermost: slit','Outermost: pixels','Outermost: slit')
+print([outdir,'custom_grating_blur.pdf'],'-dpdfwrite')
 

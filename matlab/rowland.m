@@ -1,5 +1,5 @@
 % Rowland Circle Spectrometer nominal wavelength calibration on detector
-function [lambdas, deltas] = rowland(phi_s, phi_g, phi_d, R_g, w_g, d_s, d_g, d_d, N_d, m)
+function [lambdas, deltas, delta_diffract, delta_pix, delta_slit] = rowland(phi_s, phi_g, phi_d, R_g, w_g, d_s, d_g, d_d, N_d, m)
 % INPUT PARAMETERS:
 %  phi_s = angular position of   slit   on Rowland circle (rad)
 %  phi_g = angular position of grating  on Rowland circle (rad)
@@ -14,17 +14,18 @@ function [lambdas, deltas] = rowland(phi_s, phi_g, phi_d, R_g, w_g, d_s, d_g, d_
 % OUTPUTS:
 %  lambdas = wavelengths at each pixel
 %  deltas = wavelength uncertainty interval associated with each pixel
+%  delta_diffract = wavelength uncertainty due to diffraction
+%  delta_pix = wavelength uncertainty due to pixel size
+%  delta_slit = wavelength uncertainty due to slit size
 % OUTPUTS HAVE THE SAME UNITS AS THE INPUT DISTANCES, WHICH ARE ASSUMED
 % TO BE ALL THE SAME.
 % CCK 2017-May-30 corrected serious error in calculation of betas (thanks to Roy).
+% CCK 2017-May-31 new outputs delta_diffract, delta_pix, delta_slit are the RSS'd components of deltas.
 
 RR = R_g/2; % radius of Rowland circle
 N_g = w_g/d_g; % number of illuminated rulings
 
 % Cartesian coordinates of grating, slit, and detector (centers).
-phi_g;
-phi_s;
-phi_d;
 x_g = RR .* cos(phi_g);
 y_g = RR .* sin(phi_g);
 x_s = RR .* cos(phi_s);
@@ -42,6 +43,7 @@ y_gn = (-y_g)/RR;
 
 % Alpha angle at grating center (inverting the cross product)
 alpha = angle2d( x_gn, y_gn, x_gs, y_gs );
+alpha_deg = alpha * 180/pi
 
 
 % Cartesian coordinates of detector pixels
@@ -53,6 +55,9 @@ y_p = y_d + s .* cos(phi_d); % pixel y array
 
 % Array of beta angles for all of the pixels
 betas = angle2d( x_gn, y_gn, x_p - x_g, y_p - y_g );
+min_beta_deg = min(betas) * 180/pi
+max_beta_deg = max(betas) * 180/pi
+% beta = angle2d(x_gn, y_gn, x_gd, y_gd)
 
 % Array of wavelengths, using the grating equation
 lambdas = (d_g ./ m) .* ( sin(alpha) + sin(betas) );
@@ -63,9 +68,10 @@ betas_ext = [2*betas(1)-betas(2), betas, 2*betas(end)-betas(end-1)];
    % Extrapolate betas array one element each way.
 Delta_betas = 0.5*( betas_ext(3:end) - betas_ext(1:end-2) ); % range of betas subtended by each pixel
 Delta_alpha = d_s/sqrt(x_gs.^2 + y_gs.^2); % range of alphas subtended by slit
-deltas = sqrt( (lambdas/N_g).^2 ...                     % diffraction           
-            + ((d_g/m)*cos(alpha) .* Delta_alpha).^2 ...  % slit size
-            + ((d_g/m)*cos(betas) .* Delta_betas).^2 );   % pixel sizes
+delta_diffract = lambdas/N_g;                   % diffraction is governed by illuminated rulings.
+delta_slit = (d_g/m)*cos(alpha) .* Delta_alpha; % projected slit size in wavelength units
+delta_pix = (d_g/m)*cos(betas) .* Delta_betas;  % pixel wavelength interval
+deltas = sqrt( delta_diffract.^2  + delta_slit.^2 + delta_pix.^2 );   % RSS wavelength uncertainty at each pixel
 
 % Coordinates to trace Rowland circle
 phi_RS = 0:0.01:2*pi;
