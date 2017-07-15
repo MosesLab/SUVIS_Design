@@ -9,9 +9,9 @@ field_den = 7;  % Number of field angles to sample per axis
 ray_den = 25;   % Number of rays in pupil per axis
 tot_rays = field_den^2 * ray_den^2;
 
-phiS_resolution = 25;  % Number of slit positions
-d_phiS = (phiS_max - phiS_min) / (phiS_resolution - 1);     % Angle between each slit position
-phiS = phiS_min : d_phiS : phiS_max;
+% phiS_resolution = 25;  % Number of slit positions
+% d_phiS = (phiS_max - phiS_min) / (phiS_resolution - 1);     % Angle between each slit position
+% phiS = phiS_min : d_phiS : phiS_max;
 
 rays_center = [];      % Array to store results of raytrace for each slit position
 rays_left = [];
@@ -19,9 +19,9 @@ rays_right = [];
 
 % Loop over given slit positions
 i = 1;
-for phi_s = phiS
+for phi_s = phiS_array
     
-    fprintf('Raytrace for position %i of %i\n', i, phiS_resolution);
+    fprintf('Raytrace for position %i of %i\n', i, N_phi);
     
     % construct zemax model for this slit position
     build_zemax_model(phi_s, phi_g, phi_d, R_g, w_g, d_s, d_g, d_d, N_d, m, r_s, field_den, ray_den);
@@ -42,10 +42,10 @@ dir = '../output/';
 cmd_rmdir(dir);
 mkdir(dir);
 
-plot_spot(rays_left, rays_center, rays_right, phiS, dir);
+plot_spot(rays_left, rays_center, rays_right, phiS_array, dir);
 
-plot_hist(rays_left, rays_center, rays_right, phiS, dir, d_d, field_den, ray_den);
+plot_hist(rays_left, rays_center, rays_right, phiS_array, dir, d_d, field_den, ray_den);
 
-plot_resolution( rays_left, rays_center, rays_right, phiS, dir , d_d);
+plot_resolution( rays_left, rays_center, rays_right, phiS_array, dir , d_d);
 
 
